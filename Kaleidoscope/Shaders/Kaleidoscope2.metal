@@ -25,8 +25,13 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float2 target(float(gid.x) / maxSize.x, float(gid.y) / maxSize.y);
 
     // Hard code a segment to test against
-    float2 segmentA(0.125, 0.5);
-    float2 segmentB(0.5, 0.875);
+    float2 segmentA(0.1, 0.4);
+    float2 segmentB(0.4, 0.1);
+
+    // Ax + By + C = 0;
+    float A = 1;
+    float B = 1;
+    float C = -0.5;
 
     float2 d1(target - center);
     float2 d2(segmentB - segmentA);
@@ -34,6 +39,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     // determinant
     float det = d1.x * d2.y - d2.x * d1.y;
 
+    bool intersected = false;
     if (det != 0.0) {
         // lines are not parallel
         float2 d3(center - segmentA);
@@ -43,15 +49,26 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
             float det2 = d2.x * d3.y - d3.x * d2.y;
             float t = det2 / det;
             if (t >= 0.0 && t < 1.0) {
-                // Intersection!
-                float2 intersection(center.x + t * d1.x, center.y + t * d1.y);
-                // Set sampleId to intersection point for streaky effect
-                sampleId.x = intersection.x * maxSize.x;
-                sampleId.y = intersection.y * maxSize.y;
+                intersected = true;
+                // Compute reflection
+                float u = ((B * B - A * A) * target.x
+                           - 2 * A * B * target.y
+                           - 2 * A * C)
+                          / (A * A + B * B);
+                float v = ((A * A - B * B) * target.y
+                           - 2 * A * B * target.x
+                           - 2 * B * C)
+                          / (A * A + B * B);
+                sampleId.x = u * maxSize.x;
+                sampleId.y = v * maxSize.y;
             }
         }
     }
 
     half4 color = inputTexture.read(sampleId);
+    if (intersected) {
+        // Simulate dark mirror.
+        color *= 0.5;
+    }
     outputTexture.write(color, gid);
 }
