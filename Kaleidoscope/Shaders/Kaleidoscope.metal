@@ -3,7 +3,6 @@
 //  AVCamFilter
 //
 //  Created by Gareth Spor on 12/26/20.
-//  Copyright © 2020 Apple. All rights reserved.
 //
 
 #include <metal_stdlib>

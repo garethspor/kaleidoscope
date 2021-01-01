@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AF2A7E12259EAA3D00FAFE02 /* Kaleidoscope.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */; };
 		AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */; };
+		AF2A7E20259F78B600FAFE02 /* Kaleidoscope2.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */; };
 		AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFB259E456200226A8F /* AppDelegate.swift */; };
 		AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFD259E456200226A8F /* SceneDelegate.swift */; };
 		AFC44E00259E456200226A8F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFF259E456200226A8F /* ViewController.swift */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Kaleidoscope.metal; sourceTree = "<group>"; };
 		AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PassThroughMetal.metal; sourceTree = "<group>"; };
+		AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kaleidoscope2.metal; sourceTree = "<group>"; };
 		AFC44DF8259E456200226A8F /* Kaleidoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaleidoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44DFB259E456200226A8F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFD259E456200226A8F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 			children = (
 				AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */,
 				AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */,
+				AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				AFC44E2F259E465000226A8F /* CameraViewController.swift in Sources */,
 				AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */,
 				AF2A7E12259EAA3D00FAFE02 /* Kaleidoscope.metal in Sources */,
+				AF2A7E20259F78B600FAFE02 /* Kaleidoscope2.metal in Sources */,
 				AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

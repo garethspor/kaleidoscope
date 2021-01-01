@@ -32,7 +32,7 @@ class Kaleidoscope2Renderer: FilterRenderer {
 
     required init() {
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
-        let kernelFunction = defaultLibrary.makeFunction(name: "kaleidoscope")
+        let kernelFunction = defaultLibrary.makeFunction(name: "kaleidoscope2")
         do {
             computePipelineState = try metalDevice.makeComputePipelineState(function: kernelFunction!)
         } catch {
