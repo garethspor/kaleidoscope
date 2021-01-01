@@ -67,8 +67,8 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
 
     half4 color = inputTexture.read(sampleId);
     if (intersected) {
-        // Simulate dark mirror. works in preview, but lightens in capture?
-        color *= 0.5;
+        // Simulate dark mirror. Don't modify the alpha chanel!
+        color.rgb *= 0.5;
     }
     outputTexture.write(color, gid);
 }
