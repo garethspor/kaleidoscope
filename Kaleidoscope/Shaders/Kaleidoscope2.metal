@@ -18,16 +18,40 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                           constant FilterParams *params [[buffer(0)]],
                           uint2 gid [[thread_position_in_grid]])
 {
+    uint2 sampleId = gid;
     int2 maxSize(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
-    float2 fid(float(gid.x) / maxSize.x, float(gid.y) / maxSize.y);
 
-    fid = sin(fid * M_PI_F * 2);
-    fid = (fid + 1.0) / 2.0;
+    float2 center(0.5, 0.5);
+    float2 target(float(gid.x) / maxSize.x, float(gid.y) / maxSize.y);
 
-    uint2 sampleId(fid.x * maxSize.x, fid.y * maxSize.y);
-    half4 inputColor = inputTexture.read(sampleId);
+    // Hard code a segment to test against
+    float2 segmentA(0.125, 0.5);
+    float2 segmentB(0.5, 0.875);
 
-    half4 outputColor = half4(inputColor.r, inputColor.g, inputColor.b, 1.0);
+    float2 d1(target - center);
+    float2 d2(segmentB - segmentA);
 
-    outputTexture.write(outputColor, gid);
+    // determinant
+    float det = d1.x * d2.y - d2.x * d1.y;
+
+    if (det != 0.0) {
+        // lines are not parallel
+        float2 d3(center - segmentA);
+        float det1 = d1.x * d3.y - d3.x * d1.y;
+        float s = det1 / det;
+        if (s >= 0.0 && s <= 1.0) {
+            float det2 = d2.x * d3.y - d3.x * d2.y;
+            float t = det2 / det;
+            if (t >= 0.0 && t < 1.0) {
+                // Intersection!
+                float2 intersection(center.x + t * d1.x, center.y + t * d1.y);
+                // Set sampleId to intersection point for streaky effect
+                sampleId.x = intersection.x * maxSize.x;
+                sampleId.y = intersection.y * maxSize.y;
+            }
+        }
+    }
+
+    half4 color = inputTexture.read(sampleId);
+    outputTexture.write(color, gid);
 }
