@@ -36,7 +36,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float2 d1(target - center);
     float2 d2(segmentB - segmentA);
 
-    // determinant
+    // determinant  https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
     float det = d1.x * d2.y - d2.x * d1.y;
 
     bool intersected = false;
@@ -50,7 +50,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
             float t = det2 / det;
             if (t >= 0.0 && t < 1.0) {
                 intersected = true;
-                // Compute reflection
+                // Compute reflection  http://www.sdmath.com/math/geometry/reflection_across_line.html
                 float u = ((B * B - A * A) * target.x
                            - 2 * A * B * target.y
                            - 2 * A * C)
