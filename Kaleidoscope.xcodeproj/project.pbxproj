@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AF2A7E12259EAA3D00FAFE02 /* Kaleidoscope.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */; };
+		AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */; };
 		AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFB259E456200226A8F /* AppDelegate.swift */; };
 		AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFD259E456200226A8F /* SceneDelegate.swift */; };
 		AFC44E00259E456200226A8F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFF259E456200226A8F /* ViewController.swift */; };
@@ -15,6 +17,11 @@
 		AFC44E08259E456500226A8F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AFC44E06259E456500226A8F /* LaunchScreen.storyboard */; };
 		AFC44E13259E456500226A8F /* KaleidoscopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E12259E456500226A8F /* KaleidoscopeTests.swift */; };
 		AFC44E1E259E456500226A8F /* KaleidoscopeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E1D259E456500226A8F /* KaleidoscopeUITests.swift */; };
+		AFC44E2F259E465000226A8F /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E2E259E465000226A8F /* CameraViewController.swift */; };
+		AFC44E37259E5FFD00226A8F /* PreviewMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E36259E5FFD00226A8F /* PreviewMetalView.swift */; };
+		AFC44E3C259E612E00226A8F /* FilterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E3B259E612E00226A8F /* FilterRenderer.swift */; };
+		AFC44E5D259EA60D00226A8F /* Kaleidoscope2Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E5C259EA60D00226A8F /* Kaleidoscope2Renderer.swift */; };
+		AFC44E6F259EA6B300226A8F /* KaleidoscopeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E6E259EA6B300226A8F /* KaleidoscopeRenderer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Kaleidoscope.metal; sourceTree = "<group>"; };
+		AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PassThroughMetal.metal; sourceTree = "<group>"; };
 		AFC44DF8259E456200226A8F /* Kaleidoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaleidoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44DFB259E456200226A8F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFD259E456200226A8F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -49,6 +58,11 @@
 		AFC44E19259E456500226A8F /* KaleidoscopeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KaleidoscopeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44E1D259E456500226A8F /* KaleidoscopeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaleidoscopeUITests.swift; sourceTree = "<group>"; };
 		AFC44E1F259E456500226A8F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AFC44E2E259E465000226A8F /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		AFC44E36259E5FFD00226A8F /* PreviewMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewMetalView.swift; sourceTree = "<group>"; };
+		AFC44E3B259E612E00226A8F /* FilterRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterRenderer.swift; sourceTree = "<group>"; };
+		AFC44E5C259EA60D00226A8F /* Kaleidoscope2Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kaleidoscope2Renderer.swift; sourceTree = "<group>"; };
+		AFC44E6E259EA6B300226A8F /* KaleidoscopeRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaleidoscopeRenderer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +90,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AF2A7E1B259EAA5600FAFE02 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */,
+				AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
 		AFC44DEF259E456200226A8F = {
 			isa = PBXGroup;
 			children = (
@@ -99,7 +122,13 @@
 		AFC44DFA259E456200226A8F /* Kaleidoscope */ = {
 			isa = PBXGroup;
 			children = (
+				AF2A7E1B259EAA5600FAFE02 /* Shaders */,
 				AFC44DFB259E456200226A8F /* AppDelegate.swift */,
+				AFC44E2E259E465000226A8F /* CameraViewController.swift */,
+				AFC44E6E259EA6B300226A8F /* KaleidoscopeRenderer.swift */,
+				AFC44E5C259EA60D00226A8F /* Kaleidoscope2Renderer.swift */,
+				AFC44E3B259E612E00226A8F /* FilterRenderer.swift */,
+				AFC44E36259E5FFD00226A8F /* PreviewMetalView.swift */,
 				AFC44DFD259E456200226A8F /* SceneDelegate.swift */,
 				AFC44DFF259E456200226A8F /* ViewController.swift */,
 				AFC44E01259E456200226A8F /* Main.storyboard */,
@@ -258,8 +287,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFC44E5D259EA60D00226A8F /* Kaleidoscope2Renderer.swift in Sources */,
 				AFC44E00259E456200226A8F /* ViewController.swift in Sources */,
+				AFC44E6F259EA6B300226A8F /* KaleidoscopeRenderer.swift in Sources */,
+				AFC44E37259E5FFD00226A8F /* PreviewMetalView.swift in Sources */,
+				AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */,
+				AFC44E3C259E612E00226A8F /* FilterRenderer.swift in Sources */,
+				AFC44E2F259E465000226A8F /* CameraViewController.swift in Sources */,
 				AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */,
+				AF2A7E12259EAA3D00FAFE02 /* Kaleidoscope.metal in Sources */,
 				AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -439,6 +475,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 88NN72C8BC;
 				INFOPLIST_FILE = Kaleidoscope/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -458,6 +495,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 88NN72C8BC;
 				INFOPLIST_FILE = Kaleidoscope/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
