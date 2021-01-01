@@ -78,15 +78,15 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private let photoOutput = AVCapturePhotoOutput()
 
-    private let filterRenderers: [FilterRenderer] = [KaeidoscopeRenderer()]
+    private let filterRenderers: [FilterRenderer] = [KaleidoscopeRenderer(), Kaleidoscope2Renderer()]
 
-    private let photoRenderers: [FilterRenderer] = [KaeidoscopeRenderer()]
+    private let photoRenderers: [FilterRenderer] = [KaleidoscopeRenderer(), Kaleidoscope2Renderer()]
 
 //    private let videoDepthMixer = VideoMixer()
 //
 //    private let photoDepthMixer = VideoMixer()
 //
-//    private var filterIndex: Int = 0
+    private var filterIndex: Int = 0
 
     private var videoFilter: FilterRenderer?
 
@@ -139,13 +139,13 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(focusAndExposeTap))
 //        previewView.addGestureRecognizer(tapGesture)
 
-//        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
-//        leftSwipeGesture.direction = .left
-//        previewView.addGestureRecognizer(leftSwipeGesture)
-//
-//        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
-//        rightSwipeGesture.direction = .right
-//        previewView.addGestureRecognizer(rightSwipeGesture)
+        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
+        leftSwipeGesture.direction = .left
+        previewView.addGestureRecognizer(leftSwipeGesture)
+
+        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
+        rightSwipeGesture.direction = .right
+        previewView.addGestureRecognizer(rightSwipeGesture)
 
         // Check video authorization status, video access is required
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -547,8 +547,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 //            if let filter = self.videoFilter {
 //                filter.reset()
 //            }
-            self.videoFilter = self.filterRenderers[0]
-            self.photoFilter = self.photoRenderers[0]
+            self.videoFilter = self.filterRenderers[self.filterIndex]
+            self.photoFilter = self.photoRenderers[self.filterIndex]
         }
 
 //        DispatchQueue.main.async {
@@ -709,35 +709,32 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 //        }
 //    }
 //
-//    @IBAction private func changeFilterSwipe(_ gesture: UISwipeGestureRecognizer) {
-//        let filteringEnabled = videoFilterOn
-//        if filteringEnabled {
-//            if gesture.direction == .left {
-//                filterIndex = (filterIndex + 1) % filterRenderers.count
-//            } else if gesture.direction == .right {
-//                filterIndex = (filterIndex + filterRenderers.count - 1) % filterRenderers.count
-//            }
-//
-//            let newIndex = filterIndex
-//            let filterDescription = filterRenderers[newIndex].description
-//            updateFilterLabel(description: filterDescription)
-//
-//            // Switch renderers
-//            dataOutputQueue.async {
-//                if let filter = self.videoFilter {
-//                    filter.reset()
-//                }
-//                self.videoFilter = self.filterRenderers[newIndex]
-//            }
-//
-//            processingQueue.async {
-//                if let filter = self.photoFilter {
-//                    filter.reset()
-//                }
-//                self.photoFilter = self.photoRenderers[newIndex]
-//            }
-//        }
-//    }
+    @IBAction private func changeFilterSwipe(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .left {
+            filterIndex = (filterIndex + 1) % filterRenderers.count
+        } else if gesture.direction == .right {
+            filterIndex = (filterIndex + filterRenderers.count - 1) % filterRenderers.count
+        }
+
+        let newIndex = filterIndex
+//        let filterDescription = filterRenderers[newIndex].description
+//        updateFilterLabel(description: filterDescription)
+
+        // Switch renderers
+        dataOutputQueue.async {
+            if let filter = self.videoFilter {
+                filter.reset()
+            }
+            self.videoFilter = self.filterRenderers[newIndex]
+        }
+
+        processingQueue.async {
+            if let filter = self.photoFilter {
+                filter.reset()
+            }
+            self.photoFilter = self.photoRenderers[newIndex]
+        }
+    }
 //
 //    @IBAction private func focusAndExposeTap(_ gesture: UITapGestureRecognizer) {
 //        let location = gesture.location(in: previewView)

@@ -6,7 +6,7 @@ import CoreMedia
 import CoreVideo
 import Metal
 
-class KaeidoscopeRenderer: FilterRenderer {
+class KaleidoscopeRenderer: FilterRenderer {
 
     var description: String = "Kaleidoscope"
 
