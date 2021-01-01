@@ -19,10 +19,10 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                           uint2 gid [[thread_position_in_grid]])
 {
     uint2 sampleId = gid;
-    int2 maxSize(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
+    int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
 
     float2 center(0.5, 0.5);
-    float2 target(float(gid.x) / maxSize.x, float(gid.y) / maxSize.y);
+    float2 target(float(gid.x) / maxSize, float(gid.y) / maxSize);
 
     // Hard code a segment to test against
     float2 segmentA(0.1, 0.4);
@@ -59,15 +59,15 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                            - 2 * A * B * target.x
                            - 2 * B * C)
                           / (A * A + B * B);
-                sampleId.x = u * maxSize.x;
-                sampleId.y = v * maxSize.y;
+                sampleId.x = u * maxSize;
+                sampleId.y = v * maxSize;
             }
         }
     }
 
     half4 color = inputTexture.read(sampleId);
     if (intersected) {
-        // Simulate dark mirror.
+        // Simulate dark mirror. works in preview, but lightens in capture?
         color *= 0.5;
     }
     outputTexture.write(color, gid);
