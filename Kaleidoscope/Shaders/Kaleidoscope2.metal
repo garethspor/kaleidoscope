@@ -70,11 +70,11 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                           constant FilterParams *params [[buffer(0)]],
                           uint2 gid [[thread_position_in_grid]])
 {
-    constexpr float2 CENTER(0.5, 0.5);
+    const int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
+    const float2 center(float(inputTexture.get_width() / 2) / maxSize,
+                        float(inputTexture.get_height() / 2) / maxSize);
 
     uint2 sampleCoords = gid;
-    int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
-
     float2 target(float(gid.x) / maxSize, float(gid.y) / maxSize);
 
     // Hard code a segment to test against
@@ -93,7 +93,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     };
 
     half4 color;
-    bool intersected = Intersects(CENTER, target, segment);
+    bool intersected = Intersects(center, target, segment);
     if (intersected) {
         float2 reflectedTarget = Reflect(target, segment);
         sampleCoords.x = reflectedTarget.x * maxSize;
