@@ -31,20 +31,54 @@ float ComputeDeterminant(float2 a, float2 b) {
     return a.x * b.y - b.x * a.y;
 }
 
+float2 Reflect(float2 point, LineSegment line) {
+    // from: http://www.sdmath.com/math/geometry/reflection_across_line.html
+    return {(line.coefBASquaredDiff * point.x
+               - line.twoAB * point.y
+               - line.twoAC)
+    / line.coefABSquaredSum,
+      (-line.coefBASquaredDiff * point.y
+               - line.twoAB * point.x
+               - line.twoBC)
+        / line.coefABSquaredSum};
+}
+
+bool Intersects(float2 point0, float2 point1, LineSegment segment) {
+    // from: https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
+    float2 vector(point1 - point0);
+    float detA = ComputeDeterminant(vector, segment.vectorRepresentation);
+    if (detA == 0.0) {
+        // lines are parallel. For our purposes, assume no intersection.
+        return false;
+    }
+    float2 d3(point0 - segment.point0);
+    float detB = ComputeDeterminant(vector, d3);
+    float s = detB / detA;
+    if (s >= 0.0 && s <= 1.0) {
+        float detC = ComputeDeterminant(segment.vectorRepresentation, d3);
+        float t = detC / detA;
+        if (t >= 0.0 && t < 1.0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Compute kernel
 kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
                           texture2d<half, access::write> outputTexture [[ texture(1) ]],
                           constant FilterParams *params [[buffer(0)]],
                           uint2 gid [[thread_position_in_grid]])
 {
-    uint2 sampleId = gid;
+    constexpr float2 CENTER(0.5, 0.5);
+
+    uint2 sampleCoords = gid;
     int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
 
-    float2 center(0.5, 0.5);
     float2 target(float(gid.x) / maxSize, float(gid.y) / maxSize);
 
     // Hard code a segment to test against
-    LineSegment line{
+    LineSegment segment{
         .point0 = {0.1, 0.4},
         .point1 = {0.4, 0.1},
         .vectorRepresentation = {0.3, -0.3},
@@ -58,42 +92,18 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
         .twoBC = -1.0
     };
 
-    float2 d1(target - center);
-    float2 d2 = line.vectorRepresentation;
-
-    // determinant  https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
-    float det = ComputeDeterminant(d1, line.vectorRepresentation);
-
-    bool intersected = false;
-    if (det != 0.0) {
-        // lines are not parallel
-        float2 d3(center - line.point0);
-        float det1 = ComputeDeterminant(d1, d3);
-        float s = det1 / det;
-        if (s >= 0.0 && s <= 1.0) {
-            float det2 = ComputeDeterminant(d2, d3);
-            float t = det2 / det;
-            if (t >= 0.0 && t < 1.0) {
-                intersected = true;
-                // Compute reflection  http://www.sdmath.com/math/geometry/reflection_across_line.html
-                float u = (line.coefBASquaredDiff * target.x
-                           - line.twoAB * target.y
-                           - line.twoAC)
-                          / line.coefABSquaredSum;
-                float v = (-line.coefBASquaredDiff * target.y
-                           - line.twoAB * target.x
-                           - line.twoBC)
-                          / line.coefABSquaredSum;
-                sampleId.x = u * maxSize;
-                sampleId.y = v * maxSize;
-            }
-        }
-    }
-
-    half4 color = inputTexture.read(sampleId);
+    half4 color;
+    bool intersected = Intersects(CENTER, target, segment);
     if (intersected) {
+        float2 reflectedTarget = Reflect(target, segment);
+        sampleCoords.x = reflectedTarget.x * maxSize;
+        sampleCoords.y = reflectedTarget.y * maxSize;
+        color = inputTexture.read(sampleCoords);
         // Simulate dark mirror. Don't modify the alpha chanel!
         color.rgb *= 0.5;
+    } else {
+        color = inputTexture.read(sampleCoords);
     }
+
     outputTexture.write(color, gid);
 }
