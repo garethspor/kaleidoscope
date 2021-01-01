@@ -50,9 +50,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private let photoOutput = AVCapturePhotoOutput()
 
-    private let filterRenderers: [FilterRenderer] = [KaleidoscopeRenderer(), Kaleidoscope2Renderer()]
+    private let filterRenderers: [FilterRenderer] = [Kaleidoscope2Renderer(), KaleidoscopeRenderer()]
 
-    private let photoRenderers: [FilterRenderer] = [KaleidoscopeRenderer(), Kaleidoscope2Renderer()]
+    private let photoRenderers: [FilterRenderer] = [Kaleidoscope2Renderer(), KaleidoscopeRenderer()]
 
     private var filterIndex: Int = 0
 

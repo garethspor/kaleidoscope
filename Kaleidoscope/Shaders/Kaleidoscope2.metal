@@ -18,9 +18,16 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                           constant FilterParams *params [[buffer(0)]],
                           uint2 gid [[thread_position_in_grid]])
 {
-    half4 inputColor = inputTexture.read(gid);
+    int2 maxSize(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
+    float2 fid(float(gid.x) / maxSize.x, float(gid.y) / maxSize.y);
 
-    half4 outputColor = half4(inputColor.r, inputColor.g, 0.0, 1.0);
+    fid = sin(fid * M_PI_F * 2);
+    fid = (fid + 1.0) / 2.0;
+
+    uint2 sampleId(fid.x * maxSize.x, fid.y * maxSize.y);
+    half4 inputColor = inputTexture.read(sampleId);
+
+    half4 outputColor = half4(inputColor.r, inputColor.g, inputColor.b, 1.0);
 
     outputTexture.write(outputColor, gid);
 }
