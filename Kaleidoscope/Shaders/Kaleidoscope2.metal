@@ -27,6 +27,10 @@ struct LineSegment {
     float twoBC = 0.0;  // 2BC
 };
 
+float ComputeDeterminant(float2 a, float2 b) {
+    return a.x * b.y - b.x * a.y;
+}
+
 // Compute kernel
 kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
                           texture2d<half, access::write> outputTexture [[ texture(1) ]],
@@ -58,16 +62,16 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float2 d2 = line.vectorRepresentation;
 
     // determinant  https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
-    float det = d1.x * d2.y - d2.x * d1.y;
+    float det = ComputeDeterminant(d1, line.vectorRepresentation);
 
     bool intersected = false;
     if (det != 0.0) {
         // lines are not parallel
         float2 d3(center - line.point0);
-        float det1 = d1.x * d3.y - d3.x * d1.y;
+        float det1 = ComputeDeterminant(d1, d3);
         float s = det1 / det;
         if (s >= 0.0 && s <= 1.0) {
-            float det2 = d2.x * d3.y - d3.x * d2.y;
+            float det2 = ComputeDeterminant(d2, d3);
             float t = det2 / det;
             if (t >= 0.0 && t < 1.0) {
                 intersected = true;
