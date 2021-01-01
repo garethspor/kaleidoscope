@@ -20,7 +20,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var cameraUnavailableLabel: UILabel!
 
-//    @IBOutlet weak private var filterLabel: UILabel!
+    @IBOutlet weak private var filterLabel: UILabel!
 
     @IBOutlet weak private var previewView: PreviewMetalView!
 
@@ -183,6 +183,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         sessionQueue.async {
             self.configureSession()
         }
+        let filterDescription = filterRenderers[filterIndex].description
+        updateFilterLabel(description: filterDescription)
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -717,8 +720,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
 
         let newIndex = filterIndex
-//        let filterDescription = filterRenderers[newIndex].description
-//        updateFilterLabel(description: filterDescription)
+        let filterDescription = filterRenderers[newIndex].description
+        updateFilterLabel(description: filterDescription)
 
         // Switch renderers
         dataOutputQueue.async {
@@ -1026,19 +1029,19 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 //        self.depthDataMaxFrameRateSlider.isHidden = !depthVisualizationOn
 //    }
 
-//    func updateFilterLabel(description: String) {
-//        filterLabel.text = description
-//        filterLabel.alpha = 0.0
-//        filterLabel.isHidden = false
-//
-//        UIView.animate(withDuration: 0.25, animations: {
-//            self.filterLabel.alpha = 1.0
-//        }) { _ in
-//            UIView.animate(withDuration: 0.25, delay: 1.0, options: [], animations: {
-//                self.filterLabel.alpha = 0.0
-//            }, completion: { _ in })
-//        }
-//    }
+    func updateFilterLabel(description: String) {
+        filterLabel.text = description
+        filterLabel.alpha = 0.0
+        filterLabel.isHidden = false
+
+        UIView.animate(withDuration: 0.25, animations: {
+            self.filterLabel.alpha = 1.0
+        }) { _ in
+            UIView.animate(withDuration: 0.25, delay: 1.0, options: [], animations: {
+                self.filterLabel.alpha = 0.0
+            }, completion: { _ in })
+        }
+    }
 
     // MARK: - Video Data Output Delegate
 

@@ -8,7 +8,7 @@ import Metal
 
 class Kaleidoscope2Renderer: FilterRenderer {
 
-    var description: String = "Kaleidoscope"
+    var description: String = "Kaleidoscope2"
 
     var kaleidoscopeOrder: Int = 17;
 
