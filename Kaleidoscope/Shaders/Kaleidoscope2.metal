@@ -76,18 +76,44 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float2 target(float(gid.x) / maxSize, float(gid.y) / maxSize);
 
     // Hard code a segment to test against
+//    LineSegment segment{
+//        .point0 = {0.1, 0.6},
+//        .point1 = {0.5, 0.2},
+//        .vectorRepresentation = {0.4, -0.4},
+//        .coefA = 1.0,
+//        .coefB = 1.0,
+//        .coefC = -0.7,
+//        .coefBASquaredDiff = 0.0,
+//        .coefABSquaredSum = 2.0,
+//        .twoAB = 2.0,
+//        .twoAC = -1.4,
+//        .twoBC = -1.4
+//    };
+//    LineSegment segment{
+//        .point0 = {0.5, 0.2},
+//        .point1 = {0.9, 0.6},
+//        .vectorRepresentation = {0.4, 0.4},
+//        .coefA = 1.0,
+//        .coefB = -1.0,
+//        .coefC = -0.3,
+//        .coefBASquaredDiff = 0.0,
+//        .coefABSquaredSum = 2.0,
+//        .twoAB = -2.0,
+//        .twoAC = -0.6,
+//        .twoBC = 0.6
+//    };
     LineSegment segment{
-        .point0 = {0.1, 0.4},
-        .point1 = {0.4, 0.1},
-        .vectorRepresentation = {0.3, -0.3},
-        .coefA = 1.0,
+        .point0 = {0.1, 0.6},
+        .point1 = {0.9, 0.6},
+        .vectorRepresentation = {0.8, 0.0},
+        .coefA = 0.0,
         .coefB = 1.0,
-        .coefC = -0.5,
-        .coefBASquaredDiff = 0.0,
-        .coefABSquaredSum = 2.0,
-        .twoAB = 2.0,
-        .twoAC = -1.0,
-        .twoBC = -1.0
+        .coefC = -0.6,
+        .coefBASquaredDiff = 1.0,
+        .coefABSquaredSum = 1.0,
+        .twoAB = 0.0,
+        .twoAC = 0.0,
+        .twoBC = -1.2
     };
 
     half4 color;
@@ -97,7 +123,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                            uint(reflectedTarget.y * maxSize)};
         color = inputTexture.read(sampleCoords);
         // Simulate dark mirror. Don't modify the alpha chanel!
-        color.rgb *= 0.5;
+        color.rgb *= 0.75;
     } else {
         color = inputTexture.read(gid);
     }
