@@ -8,13 +8,6 @@ import CoreVideo
 import Photos
 import MobileCoreServices
 
-extension UIGestureRecognizer {
-  func cancel() {
-    isEnabled = false
-    isEnabled = true
-  }
-}
-
 class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureDepthDataOutputDelegate, AVCaptureDataOutputSynchronizerDelegate {
 
     // MARK: - Properties
@@ -593,7 +586,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     @IBAction private func dragDots(_ gesture: UILongPressGestureRecognizer) {
         print (gesture)
         // TODO: Call this if not near any dots
-        gesture.cancel()
+        gesture.state = .cancelled
     }
 
     @IBAction private func changeFilterSwipe(_ gesture: UISwipeGestureRecognizer) {
