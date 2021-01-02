@@ -830,7 +830,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             let x = Float(dot.frame.origin.x + dot.frame.width / 2)
             let y = Float(dot.frame.origin.y + dot.frame.height / 2)
             // TODO: get these coords right
-            corners.append(Vec2f(x: y/600, y: 0.5 - x/600))
+            corners.append(Vec2f(x: y/620 - 0.26, y: 0.725 - x/620))
         }
 //        guard let texturePoint = previewView.texturePointForView(point: unwrappedDraggingDot.frame.origin) else {
 //            return
