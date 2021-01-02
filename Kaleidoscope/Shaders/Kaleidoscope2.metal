@@ -74,8 +74,15 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                           uint2 gid [[thread_position_in_grid]])
 {
     const int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
-    const float2 center(float(inputTexture.get_width() / 2) / maxSize,
-                        float(inputTexture.get_height() / 2) / maxSize);
+
+    // Center on the mean of all mirror corners
+    float2 center{0, 0};
+    for (int i = 0; i < params->numSegments; ++i) {
+        center += mirrors[i].point0;
+        center += mirrors[i].point1;
+    }
+    center /= (params->numSegments * 2);
+
     const float gridY = params->mirrored ? inputTexture.get_height() - 1 - gid.y : gid.y;
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
 
