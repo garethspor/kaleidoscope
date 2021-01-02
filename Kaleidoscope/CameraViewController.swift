@@ -622,6 +622,11 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             unwrappedDraggingDot.transform = .identity
             unwrappedDraggingDot.frame = translatedFrame
 
+            guard let texturePoint = previewView.texturePointForView(point: unwrappedDraggingDot.frame.origin) else {
+                return
+            }
+            print (texturePoint)
+
             draggingDot = .none
 
         default:
