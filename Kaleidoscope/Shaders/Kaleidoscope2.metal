@@ -10,6 +10,7 @@ using namespace metal;
 
 struct FilterParams {
     bool mirrored = false;
+    int numSegments = 3;
 };
 
 struct LineSegment {
@@ -68,6 +69,7 @@ bool Intersects(float2 point0, float2 point1, LineSegment segment) {
 kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
                           texture2d<half, access::write> outputTexture [[ texture(1) ]],
                           constant FilterParams *params [[buffer(0)]],
+                          constant LineSegment *mirrors [[buffer(1)]],
                           uint2 gid [[thread_position_in_grid]])
 {
     const int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
@@ -75,49 +77,6 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                         float(inputTexture.get_height() / 2) / maxSize);
     const float gridY = params->mirrored ? inputTexture.get_height() - 1 - gid.y : gid.y;
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
-
-    // Hard code segments to test against
-    const int numSegments = 3;
-    LineSegment segments[3] =
-    {{
-        .point0 = {0.1, 0.6},
-        .point1 = {0.5, 0.2},
-        .vectorRepresentation = {0.4, -0.4},
-        .coefA = 1.0,
-        .coefB = 1.0,
-        .coefC = -0.7,
-        .coefBASquaredDiff = 0.0,
-        .coefABSquaredSum = 2.0,
-        .twoAB = 2.0,
-        .twoAC = -1.4,
-        .twoBC = -1.4
-    },
-    {
-        .point0 = {0.5, 0.2},
-        .point1 = {0.9, 0.6},
-        .vectorRepresentation = {0.4, 0.4},
-        .coefA = 1.0,
-        .coefB = -1.0,
-        .coefC = -0.3,
-        .coefBASquaredDiff = 0.0,
-        .coefABSquaredSum = 2.0,
-        .twoAB = -2.0,
-        .twoAC = -0.6,
-        .twoBC = 0.6
-    },
-    {
-        .point0 = {0.1, 0.6},
-        .point1 = {0.9, 0.6},
-        .vectorRepresentation = {0.8, 0.0},
-        .coefA = 0.0,
-        .coefB = 1.0,
-        .coefC = -0.6,
-        .coefBASquaredDiff = 1.0,
-        .coefABSquaredSum = 1.0,
-        .twoAB = 0.0,
-        .twoAC = 0.0,
-        .twoBC = -1.2
-    }};
 
     constexpr int MAX_REFLECTIONS = 10;
     constexpr float MIRROR_BRIGHTNESS = 0.85;
@@ -128,13 +87,14 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float brightness = 1.0;
     while (numReflections < MAX_REFLECTIONS) {
         bool reflected = false;
-        for (int i = 0; i < numSegments; ++i) {
+        for (int i = 0; i < 3; ++i) {
+//        for (int i = 0; i < params->numSegments; ++i) {
             if (i == lastReflectionSegment) {
                 continue;
             }
             // For now, just go with the 1st intersection. For more complex shapes, we'll need to use the closest intersection.
-            if (Intersects(center, target, segments[i])) {
-                target = Reflect(target, segments[i]);
+            if (Intersects(center, target, mirrors[i])) {
+                target = Reflect(target, mirrors[i]);
                 lastReflectionSegment = i;
                 ++numReflections;
                 brightness *= MIRROR_BRIGHTNESS;
