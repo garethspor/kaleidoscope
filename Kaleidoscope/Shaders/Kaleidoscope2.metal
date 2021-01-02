@@ -118,29 +118,34 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
         .twoBC = -1.2
     }};
 
-    half4 color;
     constexpr int MAX_REFLECTIONS = 10;
-//    int numReflections = 0;
+    constexpr float MIRROR_BRIGHTNESS = 0.85;
+
+    half4 color;
+    int numReflections = 0;
     int lastReflectionSegment = -1;
     float brightness = 1.0;
-    constexpr float mirrorBrightness = 0.85;
-//    while (numReflections < MAX_REFLECTIONS) {
-    for(int j = 0; j < MAX_REFLECTIONS; ++j) {
-        for(int i = 0; i < numSegments; ++i) {
+    while (numReflections < MAX_REFLECTIONS) {
+        bool reflected = false;
+        for (int i = 0; i < numSegments; ++i) {
             if (i == lastReflectionSegment) {
                 continue;
             }
+            // For now, just go with the 1st intersection. For more complex shapes, we'll need to use the closest intersection.
             if (Intersects(center, target, segments[i])) {
                 target = Reflect(target, segments[i]);
                 lastReflectionSegment = i;
-//                ++numReflections;
-                brightness *= mirrorBrightness;
-//                continue;
+                ++numReflections;
+                brightness *= MIRROR_BRIGHTNESS;
+                reflected = true;
+                break;
             }
-            // no reflections
-//            break;
+        }
+        if (!reflected) {
+            break;
         }
     }
+
     uint2 sampleCoords{uint(target.x * maxSize),
                        uint(target.y * maxSize)};
     color = inputTexture.read(sampleCoords);
