@@ -99,8 +99,9 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     const float gridY = params->mirrored ? inputTexture.get_height() - 1 - gid.y : gid.y;
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
 
-    constexpr int MAX_REFLECTIONS = 128;
-    constexpr float MIRROR_BRIGHTNESS = 0.75;
+    constexpr int MAX_REFLECTIONS = 64;
+    // TODO: fix brightness
+    constexpr float MIRROR_BRIGHTNESS = 0.3;
     constexpr float MIRROR_TRANSPARENCY = 0.125;
 
     half4 color = Sample(inputTexture, target, params->mirrored, maxSize);
