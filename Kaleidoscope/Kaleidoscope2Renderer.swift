@@ -30,6 +30,8 @@ class Kaleidoscope2Renderer: FilterRenderer {
         return self.metalDevice.makeCommandQueue()
     }()
 
+    var mirrorCorners: [Vec2f]?
+
     required init() {
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
         let kernelFunction = defaultLibrary.makeFunction(name: "kaleidoscope2")
@@ -107,17 +109,17 @@ class Kaleidoscope2Renderer: FilterRenderer {
             mirrored: mirrored
         )
 
-        let mirrorCorners: [Vec2f] = [
-            Vec2f(x: 0.7, y: 0.475),
-            Vec2f(x: 0.4, y: 0.375),
-            Vec2f(x: 0.37, y: 0.475),
-        ]
+        guard let unwrappedMirrorCorners = mirrorCorners else {
+            print("mirrorCorners unset")
+            CVMetalTextureCacheFlush(textureCache!, 0)
+            return nil
+        }
 
         // TODO: auto generate
         let mirrors: [LineSegment] = [
-            MakeLineSegment(p0: mirrorCorners[0], p1: mirrorCorners[1]),
-            MakeLineSegment(p0: mirrorCorners[1], p1: mirrorCorners[2]),
-            MakeLineSegment(p0: mirrorCorners[2], p1: mirrorCorners[0]),
+            MakeLineSegment(p0: unwrappedMirrorCorners[0], p1: unwrappedMirrorCorners[1]),
+            MakeLineSegment(p0: unwrappedMirrorCorners[1], p1: unwrappedMirrorCorners[2]),
+            MakeLineSegment(p0: unwrappedMirrorCorners[2], p1: unwrappedMirrorCorners[0]),
         ]
 
 

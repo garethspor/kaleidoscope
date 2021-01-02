@@ -820,6 +820,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         processVideo(sampleBuffer: sampleBuffer)
     }
 
+    func setFilterParams(_ filter: FilterRenderer) {
+        guard let renderer = filter as? Kaleidoscope2Renderer else {
+            return
+        }
+        renderer.mirrored = previewView.mirroring
+        renderer.mirrorCorners = [
+            Vec2f(x: 0.7, y: 0.475),
+            Vec2f(x: 0.4, y: 0.375),
+            Vec2f(x: 0.37, y: 0.475),
+        ]
+    }
+
     func processVideo(sampleBuffer: CMSampleBuffer) {
         if !renderingEnabled {
             return
@@ -840,10 +852,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 filter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
             }
 
-            // Set filter specific params
-            if let renderer = filter as? Kaleidoscope2Renderer {
-                renderer.mirrored = previewView.mirroring
-            }
+            setFilterParams(filter)
 
             // Send the pixel buffer through the filter
             guard let filteredBuffer = filter.render(pixelBuffer: finalVideoPixelBuffer) else {
@@ -901,10 +910,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                     }
                 }
 
-                // Set filter specific params
-                if let renderer = filter as? Kaleidoscope2Renderer {
-                    renderer.mirrored = self.previewView.mirroring
-                }
+                self.setFilterParams(filter)
 
                 guard let filteredPixelBuffer = filter.render(pixelBuffer: finalPixelBuffer) else {
                     print("Unable to filter photo buffer")
