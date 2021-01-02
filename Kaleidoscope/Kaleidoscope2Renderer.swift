@@ -108,33 +108,13 @@ class Kaleidoscope2Renderer: FilterRenderer {
         )
 
         let mirrors = [
-            LineSegment(
-                p0x: 0.1, p0y: 0.6,
-                p1x: 0.5, p1y: 0.2,
-                vecX: 0.4, vecY: -0.4,
-                coefA: 1.0, coefB: 1.0, coefC: -0.7,
-                coefBASquaredDiff: 0.0,
-                coefABSquaredSum: 2.0,
-                twoAB: 2.0, twoAC: -1.4, twoBC: -1.4
-            ),
-            LineSegment(
-                p0x: 0.5, p0y: 0.2,
-                p1x: 0.9, p1y: 0.6,
-                vecX: 0.4, vecY: 0.4,
-                coefA: 1.0, coefB: -1.0, coefC: -0.3,
-                coefBASquaredDiff: 0.0,
-                coefABSquaredSum: 2.0,
-                twoAB: -2.0, twoAC: -0.6, twoBC: 0.6
-            ),
-            LineSegment(
-                p0x: 0.1, p0y: 0.6,
-                p1x: 0.9, p1y: 0.6,
-                vecX: 0.8, vecY: 0.0,
-                coefA: 0.0, coefB: 1.0, coefC: -0.6,
-                coefBASquaredDiff: 1.0,
-                coefABSquaredSum: 1.0,
-                twoAB: 0.0, twoAC: 0.0, twoBC: -1.2
-            )]
+            MakeLineSegment(p0x: 0.1, p0y: 0.6,
+                            p1x: 0.5, p1y: 0.2),
+            MakeLineSegment(p0x: 0.5, p0y: 0.2,
+                            p1x: 0.9, p1y: 0.6),
+            MakeLineSegment(p0x: 0.1, p0y: 0.6,
+                            p1x: 0.9, p1y: 0.6),
+        ]
 
         commandEncoder.label = "Kaleidoscope"
         commandEncoder.setComputePipelineState(computePipelineState!)
