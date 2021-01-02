@@ -75,34 +75,36 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                         float(inputTexture.get_height() / 2) / maxSize);
     float2 target(float(gid.x) / maxSize, float(gid.y) / maxSize);
 
-    // Hard code a segment to test against
-//    LineSegment segment{
-//        .point0 = {0.1, 0.6},
-//        .point1 = {0.5, 0.2},
-//        .vectorRepresentation = {0.4, -0.4},
-//        .coefA = 1.0,
-//        .coefB = 1.0,
-//        .coefC = -0.7,
-//        .coefBASquaredDiff = 0.0,
-//        .coefABSquaredSum = 2.0,
-//        .twoAB = 2.0,
-//        .twoAC = -1.4,
-//        .twoBC = -1.4
-//    };
-//    LineSegment segment{
-//        .point0 = {0.5, 0.2},
-//        .point1 = {0.9, 0.6},
-//        .vectorRepresentation = {0.4, 0.4},
-//        .coefA = 1.0,
-//        .coefB = -1.0,
-//        .coefC = -0.3,
-//        .coefBASquaredDiff = 0.0,
-//        .coefABSquaredSum = 2.0,
-//        .twoAB = -2.0,
-//        .twoAC = -0.6,
-//        .twoBC = 0.6
-//    };
-    LineSegment segment{
+    // Hard code segments to test against
+    const int numSegments = 3;
+    LineSegment segments[3] =
+    {{
+        .point0 = {0.1, 0.6},
+        .point1 = {0.5, 0.2},
+        .vectorRepresentation = {0.4, -0.4},
+        .coefA = 1.0,
+        .coefB = 1.0,
+        .coefC = -0.7,
+        .coefBASquaredDiff = 0.0,
+        .coefABSquaredSum = 2.0,
+        .twoAB = 2.0,
+        .twoAC = -1.4,
+        .twoBC = -1.4
+    },
+    {
+        .point0 = {0.5, 0.2},
+        .point1 = {0.9, 0.6},
+        .vectorRepresentation = {0.4, 0.4},
+        .coefA = 1.0,
+        .coefB = -1.0,
+        .coefC = -0.3,
+        .coefBASquaredDiff = 0.0,
+        .coefABSquaredSum = 2.0,
+        .twoAB = -2.0,
+        .twoAC = -0.6,
+        .twoBC = 0.6
+    },
+    {
         .point0 = {0.1, 0.6},
         .point1 = {0.9, 0.6},
         .vectorRepresentation = {0.8, 0.0},
@@ -114,19 +116,35 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
         .twoAB = 0.0,
         .twoAC = 0.0,
         .twoBC = -1.2
-    };
+    }};
 
     half4 color;
-    if (Intersects(center, target, segment)) {
-        float2 reflectedTarget = Reflect(target, segment);
-        uint2 sampleCoords{uint(reflectedTarget.x * maxSize),
-                           uint(reflectedTarget.y * maxSize)};
-        color = inputTexture.read(sampleCoords);
-        // Simulate dark mirror. Don't modify the alpha chanel!
-        color.rgb *= 0.75;
-    } else {
-        color = inputTexture.read(gid);
+    constexpr int MAX_REFLECTIONS = 10;
+//    int numReflections = 0;
+    int lastReflectionSegment = -1;
+    float brightness = 1.0;
+    constexpr float mirrorBrightness = 0.85;
+//    while (numReflections < MAX_REFLECTIONS) {
+    for(int j = 0; j < MAX_REFLECTIONS; ++j) {
+        for(int i = 0; i < numSegments; ++i) {
+            if (i == lastReflectionSegment) {
+                continue;
+            }
+            if (Intersects(center, target, segments[i])) {
+                target = Reflect(target, segments[i]);
+                lastReflectionSegment = i;
+//                ++numReflections;
+                brightness *= mirrorBrightness;
+//                continue;
+            }
+            // no reflections
+//            break;
+        }
     }
+    uint2 sampleCoords{uint(target.x * maxSize),
+                       uint(target.y * maxSize)};
+    color = inputTexture.read(sampleCoords);
+    color.rgb *= brightness;
 
     outputTexture.write(color, gid);
 }
