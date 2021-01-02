@@ -100,14 +100,14 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
 
     constexpr int MAX_REFLECTIONS = 64;
-    // TODO: fix brightness
-    constexpr float MIRROR_BRIGHTNESS = 0.3;
-    constexpr float MIRROR_TRANSPARENCY = 0.125;
+    constexpr float MIRROR_BRIGHTNESS = 0.7;
+    constexpr float MIRROR_TRANSPARENCY = 0.3;
 
     half4 color = Sample(inputTexture, target, params->mirrored, maxSize);
 
     int numReflections = 0;
     int lastReflectionSegment = -1;
+    float brightness = MIRROR_BRIGHTNESS;
     while (numReflections < MAX_REFLECTIONS) {
         bool reflected = false;
         for (int i = 0; i < params->numSegments; ++i) {
@@ -116,11 +116,13 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
             }
             // For now, just go with the 1st intersection. For more complex shapes, we'll need to use the closest intersection.
             if (Intersects(center, target, mirrors[i])) {
-                target = Reflect(target, mirrors[i]);
-
-                half4 newColor = Sample(inputTexture, target, params->mirrored, maxSize);
                 color.rgb *= MIRROR_TRANSPARENCY;
-                color.rgb += MIRROR_BRIGHTNESS * newColor.rgb;
+
+                target = Reflect(target, mirrors[i]);
+                half4 newColor = Sample(inputTexture, target, params->mirrored, maxSize);
+                color.rgb += (1.0 - MIRROR_TRANSPARENCY) * brightness * newColor.rgb;
+
+                brightness *= MIRROR_BRIGHTNESS;
 
                 lastReflectionSegment = i;
                 ++numReflections;
