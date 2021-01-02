@@ -72,8 +72,8 @@ class Kaleidoscope2Renderer: FilterRenderer {
     /// - Tag: Kaleidoscope Metal
 
     private struct FilterParams {
-        var mirrored: Bool = false
         var numSegments: Int = 3
+        var mirrored: Bool = false
       }
 
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
@@ -103,8 +103,8 @@ class Kaleidoscope2Renderer: FilterRenderer {
         }
 
         var params = FilterParams(
-            mirrored: mirrored,
-            numSegments: 3
+            numSegments: 3,
+            mirrored: mirrored
         )
 
         let mirrors = [
@@ -140,8 +140,12 @@ class Kaleidoscope2Renderer: FilterRenderer {
         commandEncoder.setComputePipelineState(computePipelineState!)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(outputTexture, index: 1)
-        commandEncoder.setBytes(&params, length: MemoryLayout<FilterParams>.stride, index: 0)
-        commandEncoder.setBytes(mirrors, length: MemoryLayout<LineSegment>.stride * 3, index: 1)
+        commandEncoder.setBytes(&params,
+                                length: MemoryLayout<FilterParams>.stride,
+                                index: 0)
+        commandEncoder.setBytes(mirrors,
+                                length: MemoryLayout<LineSegment>.stride * params.numSegments,
+                                index: 1)
 
         // Set up the thread groups.
         let width = computePipelineState!.threadExecutionWidth

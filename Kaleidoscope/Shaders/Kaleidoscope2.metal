@@ -8,9 +8,10 @@
 #include <metal_stdlib>
 using namespace metal;
 
+// TODO: figure out why bool has to come after int
 struct FilterParams {
-    bool mirrored = false;
     int numSegments = 3;
+    bool mirrored = false;
 };
 
 struct LineSegment {
@@ -68,8 +69,8 @@ bool Intersects(float2 point0, float2 point1, LineSegment segment) {
 // Compute kernel
 kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
                           texture2d<half, access::write> outputTexture [[ texture(1) ]],
-                          constant FilterParams *params [[buffer(0)]],
-                          constant LineSegment *mirrors [[buffer(1)]],
+                          constant FilterParams *params [[ buffer(0) ]],
+                          constant LineSegment *mirrors [[ buffer(1) ]],
                           uint2 gid [[thread_position_in_grid]])
 {
     const int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
@@ -87,8 +88,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float brightness = 1.0;
     while (numReflections < MAX_REFLECTIONS) {
         bool reflected = false;
-        for (int i = 0; i < 3; ++i) {
-//        for (int i = 0; i < params->numSegments; ++i) {
+        for (int i = 0; i < params->numSegments; ++i) {
             if (i == lastReflectionSegment) {
                 continue;
             }
