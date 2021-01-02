@@ -8,6 +8,13 @@ import CoreVideo
 import Photos
 import MobileCoreServices
 
+extension UIGestureRecognizer {
+  func cancel() {
+    isEnabled = false
+    isEnabled = true
+  }
+}
+
 class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureDepthDataOutputDelegate, AVCaptureDataOutputSynchronizerDelegate {
 
     // MARK: - Properties
@@ -94,6 +101,11 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
         rightSwipeGesture.direction = .right
         previewView.addGestureRecognizer(rightSwipeGesture)
+
+        let dragGesture = UILongPressGestureRecognizer(target: self, action:
+                                                       #selector(dragDots))
+        dragGesture.minimumPressDuration = 0.0;
+        previewView.addGestureRecognizer(dragGesture)
 
         // Check video authorization status, video access is required
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -577,6 +589,12 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
 
     // MARK: - IBAction Functions
+
+    @IBAction private func dragDots(_ gesture: UILongPressGestureRecognizer) {
+        print (gesture)
+        // TODO: Call this if not near any dots
+        gesture.cancel()
+    }
 
     @IBAction private func changeFilterSwipe(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .left {
