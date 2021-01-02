@@ -108,12 +108,12 @@ class Kaleidoscope2Renderer: FilterRenderer {
         )
 
         let mirrors = [
-            MakeLineSegment(p0x: 0.1, p0y: 0.6,
-                            p1x: 0.5, p1y: 0.2),
-            MakeLineSegment(p0x: 0.5, p0y: 0.2,
-                            p1x: 0.9, p1y: 0.6),
-            MakeLineSegment(p0x: 0.1, p0y: 0.6,
-                            p1x: 0.9, p1y: 0.6),
+            MakeLineSegment(p0x: 0.7, p0y: 0.4,
+                            p1x: 0.3, p1y: 0.325),
+            MakeLineSegment(p0x: 0.3, p0y: 0.325,
+                            p1x: 0.3, p1y: 0.475),
+            MakeLineSegment(p0x: 0.3, p0y: 0.475,
+                            p1x: 0.7, p1y: 0.4),
         ]
 
         commandEncoder.label = "Kaleidoscope"
