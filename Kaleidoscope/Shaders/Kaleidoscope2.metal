@@ -11,6 +11,7 @@ using namespace metal;
 // TODO: figure out why bool has to come after int
 struct FilterParams {
     int numSegments = 3;
+    int filler = 0;  // WAR to match packing format of Swift struct
     bool mirrored = false;
 };
 
