@@ -75,6 +75,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var draggingDot: UIView?
 
+    private var mirrorCorners: [Vec2f]?
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -150,7 +152,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             view.addSubview(imageView)
             dotViews.append(imageView)
         }
-
+        updateMirrorCorners()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -612,6 +614,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
             let translation = gesture.translation(in: unwrappedDraggingDot)
             unwrappedDraggingDot.transform = CGAffineTransform(translationX: translation.x, y: translation.y)
+            updateMirrorCorners()
 
         case .ended:
             guard let unwrappedDraggingDot = draggingDot else {
@@ -820,16 +823,31 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         processVideo(sampleBuffer: sampleBuffer)
     }
 
+    func updateMirrorCorners() {
+        var corners: [Vec2f] = []
+
+        for dot in dotViews {
+            let x = Float(dot.frame.origin.x + dot.frame.width / 2)
+            let y = Float(dot.frame.origin.y + dot.frame.height / 2)
+            // TODO: get these coords right
+            corners.append(Vec2f(x: y/600, y: 0.5 - x/600))
+        }
+//        guard let texturePoint = previewView.texturePointForView(point: unwrappedDraggingDot.frame.origin) else {
+//            return
+//        }
+//        print (texturePoint)
+        mirrorCorners = corners
+    }
+
     func setFilterParams(_ filter: FilterRenderer) {
         guard let renderer = filter as? Kaleidoscope2Renderer else {
             return
         }
         renderer.mirrored = previewView.mirroring
-        renderer.mirrorCorners = [
-            Vec2f(x: 0.7, y: 0.475),
-            Vec2f(x: 0.4, y: 0.375),
-            Vec2f(x: 0.37, y: 0.475),
-        ]
+        guard let unwrappedMirrorCorners = mirrorCorners else {
+            return
+        }
+        renderer.mirrorCorners = unwrappedMirrorCorners
     }
 
     func processVideo(sampleBuffer: CMSampleBuffer) {
