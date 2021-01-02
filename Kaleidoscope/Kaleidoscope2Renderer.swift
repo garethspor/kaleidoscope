@@ -10,7 +10,7 @@ class Kaleidoscope2Renderer: FilterRenderer {
 
     var description: String = "Kaleidoscope2"
 
-    var kaleidoscopeOrder: Int = 17;
+    var mirrored: Bool = false;
 
     var isPrepared = false
 
@@ -72,7 +72,7 @@ class Kaleidoscope2Renderer: FilterRenderer {
     /// - Tag: Kaleidoscope Metal
 
     private struct FilterParams {
-        var kaleidoscopeOrder: Int = 7
+        var mirrored: Bool = false
       }
 
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
@@ -101,7 +101,7 @@ class Kaleidoscope2Renderer: FilterRenderer {
                 return nil
         }
 
-        var params = FilterParams(kaleidoscopeOrder: kaleidoscopeOrder);
+        var params = FilterParams(mirrored: mirrored);
         commandEncoder.label = "Kaleidoscope"
         commandEncoder.setComputePipelineState(computePipelineState!)
         commandEncoder.setTexture(inputTexture, index: 0)

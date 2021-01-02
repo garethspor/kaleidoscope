@@ -9,7 +9,7 @@
 using namespace metal;
 
 struct FilterParams {
-    int kaleidoscopeOrder = 7;  // A nice default value
+    bool mirrored = false;
 };
 
 struct LineSegment {
@@ -70,11 +70,10 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
                           constant FilterParams *params [[buffer(0)]],
                           uint2 gid [[thread_position_in_grid]])
 {
-    const bool mirrored = false;  // TODO: convert this to param
     const int maxSize = max(inputTexture.get_width() - 1, inputTexture.get_height() - 1);
     const float2 center(float(inputTexture.get_width() / 2) / maxSize,
                         float(inputTexture.get_height() / 2) / maxSize);
-    const float gridY = mirrored ? inputTexture.get_height() - 1 - gid.y : gid.y;
+    const float gridY = params->mirrored ? inputTexture.get_height() - 1 - gid.y : gid.y;
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
 
     // Hard code segments to test against
@@ -149,7 +148,7 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     }
 
     uint sampleY = target.y * maxSize;
-    if (mirrored) {
+    if (params->mirrored) {
         sampleY = inputTexture.get_height() - 1 - sampleY;
     }
     uint2 sampleCoords{uint(target.x * maxSize), sampleY};

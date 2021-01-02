@@ -711,11 +711,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
             self.dataOutputQueue.async {
                 self.renderingEnabled = true
-//                self.depthVisualizationEnabled = depthEnabled
             }
 
             DispatchQueue.main.async {
-//                self.updateDepthUIHidden()
                 self.cameraButton.isEnabled = true
                 self.photoButton.isEnabled = true
             }
@@ -772,6 +770,11 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 filter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
             }
 
+            // Set filter specific params
+            if let renderer = filter as? Kaleidoscope2Renderer {
+                renderer.mirrored = previewView.mirroring
+            }
+
             // Send the pixel buffer through the filter
             guard let filteredBuffer = filter.render(pixelBuffer: finalVideoPixelBuffer) else {
                 print("Unable to filter video buffer")
@@ -826,6 +829,11 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                     if let unwrappedPhotoFormatDescription = photoFormatDescription {
                         filter.prepare(with: unwrappedPhotoFormatDescription, outputRetainedBufferCountHint: 2)
                     }
+                }
+
+                // Set filter specific params
+                if let renderer = filter as? Kaleidoscope2Renderer {
+                    renderer.mirrored = self.previewView.mirroring
                 }
 
                 guard let filteredPixelBuffer = filter.render(pixelBuffer: finalPixelBuffer) else {
