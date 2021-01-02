@@ -67,6 +67,18 @@ bool Intersects(float2 point0, float2 point1, LineSegment segment) {
     return false;
 }
 
+half4 Sample(texture2d<half, access::read>  texture,
+             float2 target,
+             bool mirrored,
+             int maxSize) {
+    uint sampleY = target.y * maxSize;
+    if (mirrored) {
+        sampleY = texture.get_height() - 1 - sampleY;
+    }
+    uint2 sampleCoords{uint(target.x * maxSize), sampleY};
+    return texture.read(sampleCoords);
+}
+
 // Compute kernel
 kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
                           texture2d<half, access::write> outputTexture [[ texture(1) ]],
@@ -88,9 +100,9 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
 
     constexpr int MAX_REFLECTIONS = 128;
-    constexpr float MIRROR_BRIGHTNESS = 0.9;
+    constexpr float MIRROR_BRIGHTNESS = 0.5;
+    constexpr float MIRROR_TRANSPARENCY = 0.5;
 
-    half4 color;
     int numReflections = 0;
     int lastReflectionSegment = -1;
     float brightness = 1.0;
@@ -115,12 +127,8 @@ kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ textur
         }
     }
 
-    uint sampleY = target.y * maxSize;
-    if (params->mirrored) {
-        sampleY = inputTexture.get_height() - 1 - sampleY;
-    }
-    uint2 sampleCoords{uint(target.x * maxSize), sampleY};
-    color = inputTexture.read(sampleCoords);
+    half4 color = Sample(inputTexture, target, params->mirrored, maxSize);
+
     color.rgb *= brightness;
 
     outputTexture.write(color, gid);
