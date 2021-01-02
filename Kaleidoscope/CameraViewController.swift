@@ -73,6 +73,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var dotViews: [UIImageView] = []
 
+    private var draggingDot: UIView?
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -95,10 +97,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         rightSwipeGesture.direction = .right
         previewView.addGestureRecognizer(rightSwipeGesture)
 
-        let dragGesture = UILongPressGestureRecognizer(target: self, action:
-                                                       #selector(dragDots))
-        dragGesture.minimumPressDuration = 0.0;
-        previewView.addGestureRecognizer(dragGesture)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
+        previewView.addGestureRecognizer(panGesture)
 
         // Check video authorization status, video access is required
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -583,10 +583,50 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     // MARK: - IBAction Functions
 
-    @IBAction private func dragDots(_ gesture: UILongPressGestureRecognizer) {
-        print (gesture)
-        // TODO: Call this if not near any dots
-        gesture.state = .cancelled
+    @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            var distances: [Float] = []
+            for dotView in dotViews {
+                var pos = gesture.location(in: dotView)
+                pos.x -= dotView.frame.width / 2;
+                pos.y -= dotView.frame.height / 2;
+                let dist = sqrt(pos.x * pos.x + pos.y * pos.y)
+                distances.append(Float(dist))
+            }
+            let minDistance = distances.min()
+            let minIndex = distances.indices.filter{ distances[$0] == minDistance }
+            let closeEnough: Float = 25.0
+            guard minDistance! < closeEnough,
+                  minIndex.count >= 1 else {
+                gesture.state = .cancelled
+                return
+            }
+            draggingDot = dotViews[minIndex[0]]
+
+        case .changed:
+            guard let unwrappedDraggingDot = draggingDot else {
+                gesture.state = .cancelled
+                return
+            }
+
+            let translation = gesture.translation(in: unwrappedDraggingDot)
+            unwrappedDraggingDot.transform = CGAffineTransform(translationX: translation.x, y: translation.y)
+
+        case .ended:
+            guard let unwrappedDraggingDot = draggingDot else {
+                return
+            }
+            // Reset the dot's frame after resetting its transform, so next drag event will work properly
+            let translatedFrame = unwrappedDraggingDot.frame
+            unwrappedDraggingDot.transform = .identity
+            unwrappedDraggingDot.frame = translatedFrame
+
+            draggingDot = .none
+
+        default:
+            gesture.state = .cancelled
+        }
     }
 
     @IBAction private func changeFilterSwipe(_ gesture: UISwipeGestureRecognizer) {
