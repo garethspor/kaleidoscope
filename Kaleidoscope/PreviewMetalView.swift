@@ -87,6 +87,18 @@ class PreviewMetalView: MTKView {
         return result
     }
 
+    func normalizedTexturePointForView(point: CGPoint) -> CGPoint? {
+        guard let transform = textureTranform else {
+            print ("No textureTransform")
+            return nil
+        }
+        var transformPoint = point.applying(transform)
+        let maxSize = CGFloat(max(textureWidth, textureHeight))
+        transformPoint.x /= maxSize
+        transformPoint.y /= maxSize
+        return transformPoint
+    }
+
     func viewPointForTexture(point: CGPoint) -> CGPoint? {
         var result: CGPoint?
         guard let transform = textureTranform?.inverted() else {

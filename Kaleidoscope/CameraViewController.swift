@@ -625,11 +625,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             unwrappedDraggingDot.transform = .identity
             unwrappedDraggingDot.frame = translatedFrame
 
-            guard let texturePoint = previewView.texturePointForView(point: unwrappedDraggingDot.frame.origin) else {
-                return
-            }
-            print (texturePoint)
-
             draggingDot = .none
 
         default:
@@ -825,17 +820,25 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     func updateMirrorCorners() {
         var corners: [Vec2f] = []
-
         for dot in dotViews {
-            let x = Float(dot.frame.origin.x + dot.frame.width / 2)
-            let y = Float(dot.frame.origin.y + dot.frame.height / 2)
-            // TODO: get these coords right
-            corners.append(Vec2f(x: y/620 - 0.26, y: 0.725 - x/620))
+            var point: CGPoint = dot.frame.origin
+            point.x -= dot.frame.width / 2
+            point.y -= dot.frame.height / 2
+
+            guard let texturePoint = previewView.normalizedTexturePointForView(point: point) else {
+                print("no texture point!")
+                let almostCorner = Vec2f(x: Float(point.y) / 620 - 0.26,
+                                         y: 0.725 - Float(point.x) / 620)
+                corners.append(almostCorner)
+                continue
+            }
+
+            let xOffset: Float = -0.0375
+            let yOffset: Float = -0.0375
+            let corner = Vec2f(x: Float(texturePoint.x) + xOffset,
+                               y: Float(texturePoint.y) + yOffset)
+            corners.append(corner)
         }
-//        guard let texturePoint = previewView.texturePointForView(point: unwrappedDraggingDot.frame.origin) else {
-//            return
-//        }
-//        print (texturePoint)
         mirrorCorners = corners
     }
 
