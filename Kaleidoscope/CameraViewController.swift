@@ -71,6 +71,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var statusBarOrientation: UIInterfaceOrientation = .portrait
 
+    private var dotViews: [UIImageView] = []
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -131,6 +133,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
         let filterDescription = filterRenderers[filterIndex].description
         updateFilterLabel(description: filterDescription)
+
+        let imageName = "dot.png"
+        let image = UIImage(named: imageName)
+        let initialDotCoords = [[100, 200], [200, 200], [200, 300]]
+        let dotSize = 20
+        for coords in initialDotCoords {
+            let imageView = UIImageView(image: image!)
+            imageView.frame = CGRect(x: coords[0], y: coords[1],
+                                     width: dotSize, height: dotSize)
+            view.addSubview(imageView)
+            dotViews.append(imageView)
+        }
 
     }
 
