@@ -63,14 +63,19 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var statusBarOrientation: UIInterfaceOrientation = .portrait
 
+    // On screen dots, marking the positions of mirror corners
     private var dotViews: [UIImageView] = []
 
+    // The current dot being dragged by the PanGesture
     private var draggingDot: UIView?
 
+    // Positions of kaleidoscope mirrors
     private var mirrorCorners: [Vec2f]?
 
+    // Bounding rect of video stream in screen coords
     private var currentVideoRect: CGRect?
 
+    // Cached value of previewView.frame so any thread an query it
     private var previewViewFrame: CGRect?
 
     // MARK: - View Controller Life Cycle
@@ -408,8 +413,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             return
         }
 
-
-
         session.beginConfiguration()
 
         session.sessionPreset = AVCaptureSession.Preset.photo
@@ -595,9 +598,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             }
             let minDistance = distances.min()
             let minIndex = distances.indices.filter{ distances[$0] == minDistance }
+
+            // If gesture is this close to dot, drag it
             let closeEnough: Float = 25.0
-            guard minDistance! < closeEnough,
-                  minIndex.count >= 1 else {
+            guard minDistance! < closeEnough, minIndex.count >= 1 else {
                 gesture.state = .cancelled
                 return
             }
@@ -780,7 +784,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         let viewHeight = currentVideoRect!.size.height
         let viewAspectRatio = Float(viewHeight) / Float(viewWidth)
         if (viewAspectRatio > imageAspectRatio) {
-            // view is taller than image (portrait orientation)
+            // view is taller than image
             let crop = Float(viewHeight) * (viewAspectRatio - imageAspectRatio) / viewAspectRatio
             currentVideoRect!.origin.y += CGFloat(crop / 2)
             currentVideoRect!.size.height -= CGFloat(crop)
