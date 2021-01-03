@@ -10,7 +10,7 @@ class KaleidoscopeRenderer: FilterRenderer {
 
     var description: String = "Kaleidoscope"
 
-    var kaleidoscopeOrder: Int = 7;
+    var mirrored: Bool = false;
 
     var isPrepared = false
 
@@ -29,6 +29,8 @@ class KaleidoscopeRenderer: FilterRenderer {
     private lazy var commandQueue: MTLCommandQueue? = {
         return self.metalDevice.makeCommandQueue()
     }()
+
+    var mirrorCorners: [Vec2f]?
 
     required init() {
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
@@ -72,7 +74,8 @@ class KaleidoscopeRenderer: FilterRenderer {
     /// - Tag: Kaleidoscope Metal
 
     private struct FilterParams {
-        var kaleidoscopeOrder: Int = 7
+        var numSegments: Int = 3
+        var mirrored: Bool = false
       }
 
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
@@ -101,12 +104,35 @@ class KaleidoscopeRenderer: FilterRenderer {
                 return nil
         }
 
-        var params = FilterParams(kaleidoscopeOrder: kaleidoscopeOrder);
+        var params = FilterParams(
+            numSegments: 3,
+            mirrored: mirrored
+        )
+
+        guard let unwrappedMirrorCorners = mirrorCorners else {
+            print("mirrorCorners unset")
+            CVMetalTextureCacheFlush(textureCache!, 0)
+            return nil
+        }
+
+        // TODO: auto generate
+        let mirrors: [LineSegment] = [
+            MakeLineSegment(p0: unwrappedMirrorCorners[0], p1: unwrappedMirrorCorners[1]),
+            MakeLineSegment(p0: unwrappedMirrorCorners[1], p1: unwrappedMirrorCorners[2]),
+            MakeLineSegment(p0: unwrappedMirrorCorners[2], p1: unwrappedMirrorCorners[0]),
+        ]
+
+
         commandEncoder.label = "Kaleidoscope"
         commandEncoder.setComputePipelineState(computePipelineState!)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(outputTexture, index: 1)
-        commandEncoder.setBytes(&params, length: MemoryLayout<FilterParams>.stride, index: 0)
+        commandEncoder.setBytes(&params,
+                                length: MemoryLayout<FilterParams>.stride,
+                                index: 0)
+        commandEncoder.setBytes(mirrors,
+                                length: MemoryLayout<LineSegment>.stride * params.numSegments,
+                                index: 1)
 
         // Set up the thread groups.
         let width = computePipelineState!.threadExecutionWidth

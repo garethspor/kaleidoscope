@@ -80,7 +80,7 @@ half4 Sample(texture2d<half, access::read>  texture,
 }
 
 // Compute kernel
-kernel void kaleidoscope2(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
+kernel void kaleidoscope(texture2d<half, access::read>  inputTexture  [[ texture(0) ]],
                           texture2d<half, access::write> outputTexture [[ texture(1) ]],
                           constant FilterParams *params [[ buffer(0) ]],
                           constant LineSegment *mirrors [[ buffer(1) ]],

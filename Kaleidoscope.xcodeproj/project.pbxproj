@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */; };
-		AF2A7E20259F78B600FAFE02 /* Kaleidoscope2.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */; };
 		AF2A7E2525A0165900FAFE02 /* LineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E2425A0165900FAFE02 /* LineSegment.swift */; };
 		AF2A7E3025A0EF1D00FAFE02 /* dot.png in Resources */ = {isa = PBXBuildFile; fileRef = AF2A7E2F25A0EF1D00FAFE02 /* dot.png */; };
+		AF2A7E4525A18BC500FAFE02 /* KaleidoscopeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E4425A18BC500FAFE02 /* KaleidoscopeRenderer.swift */; };
+		AF2A7E4A25A18BD200FAFE02 /* Kaleidoscope.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E4925A18BD200FAFE02 /* Kaleidoscope.metal */; };
 		AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFB259E456200226A8F /* AppDelegate.swift */; };
 		AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFD259E456200226A8F /* SceneDelegate.swift */; };
 		AFC44E00259E456200226A8F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFF259E456200226A8F /* ViewController.swift */; };
@@ -22,8 +23,6 @@
 		AFC44E2F259E465000226A8F /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E2E259E465000226A8F /* CameraViewController.swift */; };
 		AFC44E37259E5FFD00226A8F /* PreviewMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E36259E5FFD00226A8F /* PreviewMetalView.swift */; };
 		AFC44E3C259E612E00226A8F /* FilterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E3B259E612E00226A8F /* FilterRenderer.swift */; };
-		AFC44E5D259EA60D00226A8F /* Kaleidoscope2Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E5C259EA60D00226A8F /* Kaleidoscope2Renderer.swift */; };
-		AFC44E6F259EA6B300226A8F /* KaleidoscopeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44E6E259EA6B300226A8F /* KaleidoscopeRenderer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,10 +44,11 @@
 
 /* Begin PBXFileReference section */
 		AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PassThroughMetal.metal; sourceTree = "<group>"; };
-		AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kaleidoscope2.metal; sourceTree = "<group>"; };
 		AF2A7E2425A0165900FAFE02 /* LineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineSegment.swift; sourceTree = "<group>"; };
 		AF2A7E2F25A0EF1D00FAFE02 /* dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dot.png; sourceTree = "<group>"; };
 		AF2A7E3425A183A300FAFE02 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AF2A7E4425A18BC500FAFE02 /* KaleidoscopeRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaleidoscopeRenderer.swift; sourceTree = "<group>"; };
+		AF2A7E4925A18BD200FAFE02 /* Kaleidoscope.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Kaleidoscope.metal; sourceTree = "<group>"; };
 		AFC44DF8259E456200226A8F /* Kaleidoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaleidoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44DFB259E456200226A8F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFD259E456200226A8F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,8 +66,6 @@
 		AFC44E2E259E465000226A8F /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		AFC44E36259E5FFD00226A8F /* PreviewMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewMetalView.swift; sourceTree = "<group>"; };
 		AFC44E3B259E612E00226A8F /* FilterRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterRenderer.swift; sourceTree = "<group>"; };
-		AFC44E5C259EA60D00226A8F /* Kaleidoscope2Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kaleidoscope2Renderer.swift; sourceTree = "<group>"; };
-		AFC44E6E259EA6B300226A8F /* KaleidoscopeRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaleidoscopeRenderer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,8 +96,8 @@
 		AF2A7E1B259EAA5600FAFE02 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				AF2A7E4925A18BD200FAFE02 /* Kaleidoscope.metal */,
 				AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */,
-				AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -128,12 +126,11 @@
 		AFC44DFA259E456200226A8F /* Kaleidoscope */ = {
 			isa = PBXGroup;
 			children = (
+				AF2A7E4425A18BC500FAFE02 /* KaleidoscopeRenderer.swift */,
 				AF2A7E1B259EAA5600FAFE02 /* Shaders */,
 				AFC44DFB259E456200226A8F /* AppDelegate.swift */,
 				AF2A7E2425A0165900FAFE02 /* LineSegment.swift */,
 				AFC44E2E259E465000226A8F /* CameraViewController.swift */,
-				AFC44E6E259EA6B300226A8F /* KaleidoscopeRenderer.swift */,
-				AFC44E5C259EA60D00226A8F /* Kaleidoscope2Renderer.swift */,
 				AFC44E3B259E612E00226A8F /* FilterRenderer.swift */,
 				AFC44E36259E5FFD00226A8F /* PreviewMetalView.swift */,
 				AFC44DFD259E456200226A8F /* SceneDelegate.swift */,
@@ -296,15 +293,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AFC44E5D259EA60D00226A8F /* Kaleidoscope2Renderer.swift in Sources */,
 				AFC44E00259E456200226A8F /* ViewController.swift in Sources */,
-				AFC44E6F259EA6B300226A8F /* KaleidoscopeRenderer.swift in Sources */,
 				AFC44E37259E5FFD00226A8F /* PreviewMetalView.swift in Sources */,
+				AF2A7E4525A18BC500FAFE02 /* KaleidoscopeRenderer.swift in Sources */,
 				AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */,
+				AF2A7E4A25A18BD200FAFE02 /* Kaleidoscope.metal in Sources */,
 				AFC44E3C259E612E00226A8F /* FilterRenderer.swift in Sources */,
 				AFC44E2F259E465000226A8F /* CameraViewController.swift in Sources */,
 				AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */,
-				AF2A7E20259F78B600FAFE02 /* Kaleidoscope2.metal in Sources */,
 				AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */,
 				AF2A7E2525A0165900FAFE02 /* LineSegment.swift in Sources */,
 			);

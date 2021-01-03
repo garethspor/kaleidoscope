@@ -48,9 +48,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private let photoOutput = AVCapturePhotoOutput()
 
-    private var videoFilter: FilterRenderer = Kaleidoscope2Renderer()
+    private var videoFilter: FilterRenderer = KaleidoscopeRenderer()
 
-    private var photoFilter: FilterRenderer = Kaleidoscope2Renderer()
+    private var photoFilter: FilterRenderer = KaleidoscopeRenderer()
 
     private var renderingEnabled = true
 
@@ -789,7 +789,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
 
     func setFilterParams(_ filter: FilterRenderer) {
-        guard let renderer = filter as? Kaleidoscope2Renderer else {
+        guard let renderer = filter as? KaleidoscopeRenderer else {
             return
         }
         renderer.mirrored = previewView.mirroring
