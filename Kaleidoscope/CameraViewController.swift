@@ -69,6 +69,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var mirrorCorners: [Vec2f]?
 
+    private var currentVideoRect: CGRect?
+
+    private var previewViewFrame: CGRect?
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -135,7 +139,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             view.addSubview(imageView)
             dotViews.append(imageView)
         }
-        updateMirrorCorners()
+        previewViewFrame = previewView.frame
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -404,6 +408,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             return
         }
 
+
+
         session.beginConfiguration()
 
         session.sessionPreset = AVCaptureSession.Preset.photo
@@ -445,6 +451,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         capFrameRate(videoDevice: videoDevice)
 
         session.commitConfiguration()
+
+        updateImageRect(videoDevice)
+
         dataOutputQueue.async {
             self.videoFilter.reset()
             self.photoFilter.reset()
@@ -710,22 +719,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                     self.photoOutput.connection(with: .video)!.videoOrientation = unwrappedPhotoOutputConnection.videoOrientation
                 }
 
-//                if self.photoOutput.isDepthDataDeliverySupported {
-//                    // Cap the video framerate at the max depth framerate
-//                    if let frameDuration = videoDevice.activeDepthDataFormat?.videoSupportedFrameRateRanges.first?.minFrameDuration {
-//                        do {
-//                            try videoDevice.lockForConfiguration()
-//                            videoDevice.activeVideoMinFrameDuration = frameDuration
-//                            videoDevice.unlockForConfiguration()
-//                        } catch {
-//                            print("Could not lock device for configuration: \(error)")
-//                        }
-//                    }
-//                } else {
-//                    self.outputSynchronizer = nil
-//                }
-
                 self.session.commitConfiguration()
+
+                self.updateImageRect(videoDevice)
             }
 
             let videoPosition = self.videoInput.device.position
@@ -766,23 +762,51 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         processVideo(sampleBuffer: sampleBuffer)
     }
 
+    func updateImageRect(_ device: AVCaptureDevice) {
+        let dimensions = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription)
+        print("updated video dimensions: \(String(describing: dimensions))")
+
+        guard let unwrappedPreviewViewFrame = previewViewFrame else {
+            return
+        }
+        currentVideoRect = unwrappedPreviewViewFrame
+        
+        // Widths and Heights are switched around due to portrait orientation assumption
+        let imageAspectRatio = Float(dimensions.width) / Float(dimensions.height)
+        let viewWidth = currentVideoRect!.size.width
+        let viewHeight = currentVideoRect!.size.height
+        let viewAspectRatio = Float(viewHeight) / Float(viewWidth)
+        if (viewAspectRatio > imageAspectRatio) {
+            // view is taller than image (portrait orientation)
+            let crop = Float(viewHeight) * (viewAspectRatio - imageAspectRatio) / viewAspectRatio
+            currentVideoRect!.origin.y += CGFloat(crop / 2)
+            currentVideoRect!.size.height -= CGFloat(crop)
+        } else {
+            // view is wider than image
+            let crop = Float(viewWidth) * (1.0 / viewAspectRatio - 1.0 / imageAspectRatio) / (1.0 / viewAspectRatio)
+            currentVideoRect!.origin.x += CGFloat(crop / 2)
+            currentVideoRect!.size.width -= CGFloat(crop)
+        }
+
+        DispatchQueue.main.async {
+            self.updateMirrorCorners()
+        }
+    }
+
     func updateMirrorCorners() {
+        guard let videoRect = currentVideoRect else {
+            print ("videoRect unset")
+            return
+        }
         var corners: [Vec2f] = []
 
-        // Unfortunate assumption to have to make
-        // TODO: see what we can do instead?
-        let imageAspectRatio: Float = 4.0 / 3.0
-
-        let imageWidth = Float(previewView.frame.size.width)
-        let imageHeight = imageWidth * imageAspectRatio
-        let imageYStart = (Float(previewView.frame.size.height) - imageHeight) / 2.0 + Float(previewView.frame.origin.y)
         for dot in dotViews {
             var point = Vec2f(x: Float(dot.frame.origin.x), y: Float(dot.frame.origin.y))
             point.x += Float(dot.frame.width) / 2
-            point.y += Float(dot.frame.height) / 2 - imageYStart
+            point.y += Float(dot.frame.height) / 2 - Float(videoRect.origin.y)
 
-            let corner = Vec2f(x: point.y / imageHeight,
-                               y: (imageWidth - point.x) / imageHeight)
+            let corner = Vec2f(x: point.y / Float(videoRect.size.height),
+                               y: (Float(videoRect.size.width) - point.x) / Float(videoRect.size.height))
             corners.append(corner)
         }
         mirrorCorners = corners
@@ -794,6 +818,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
         renderer.mirrored = previewView.mirroring
         guard let unwrappedMirrorCorners = mirrorCorners else {
+            print("mirrorCorners unset")
             return
         }
         renderer.mirrorCorners = unwrappedMirrorCorners
