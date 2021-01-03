@@ -617,15 +617,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             guard let unwrappedDraggingDot = draggingDot else {
                 return
             }
+            guard let videoRect = currentVideoRect else {
+                print ("videoRect unset")
+                return
+            }
             // Reset the dot's frame after resetting its transform, so next drag event will work properly
             var translatedFrame = unwrappedDraggingDot.frame
-            // TODO: store actual texture bounds somewhere and use those instead of the previewView.frame which overlaps with the buttons too much
-            translatedFrame.origin.x = max(translatedFrame.origin.x, previewView.frame.origin.x)
-            translatedFrame.origin.y = max(translatedFrame.origin.y, previewView.frame.origin.y)
+            translatedFrame.origin.x = max(translatedFrame.origin.x, videoRect.origin.x)
+            translatedFrame.origin.y = max(translatedFrame.origin.y, videoRect.origin.y)
             translatedFrame.origin.x = min(translatedFrame.origin.x,
-                                           previewView.frame.origin.x + previewView.frame.width - translatedFrame.width)
+                                           videoRect.origin.x + videoRect.width - translatedFrame.width)
             translatedFrame.origin.y = min(translatedFrame.origin.y,
-                                           previewView.frame.origin.y + previewView.frame.height - translatedFrame.height)
+                                           videoRect.origin.y + videoRect.height - translatedFrame.height)
             unwrappedDraggingDot.transform = .identity
             unwrappedDraggingDot.frame = translatedFrame
 
@@ -801,6 +804,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         var corners: [Vec2f] = []
 
         for dot in dotViews {
+            // TODO: fix this in case view is wider than image, currently broken
             var point = Vec2f(x: Float(dot.frame.origin.x), y: Float(dot.frame.origin.y))
             point.x += Float(dot.frame.width) / 2
             point.y += Float(dot.frame.height) / 2 - Float(videoRect.origin.y)
