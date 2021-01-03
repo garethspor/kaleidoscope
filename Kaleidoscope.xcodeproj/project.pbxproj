@@ -50,6 +50,7 @@
 		AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kaleidoscope2.metal; sourceTree = "<group>"; };
 		AF2A7E2425A0165900FAFE02 /* LineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineSegment.swift; sourceTree = "<group>"; };
 		AF2A7E2F25A0EF1D00FAFE02 /* dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dot.png; sourceTree = "<group>"; };
+		AF2A7E3425A183A300FAFE02 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AFC44DF8259E456200226A8F /* Kaleidoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaleidoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44DFB259E456200226A8F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFD259E456200226A8F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,6 +110,7 @@
 		AFC44DEF259E456200226A8F = {
 			isa = PBXGroup;
 			children = (
+				AF2A7E3425A183A300FAFE02 /* README.md */,
 				AFC44DFA259E456200226A8F /* Kaleidoscope */,
 				AFC44E11259E456500226A8F /* KaleidoscopeTests */,
 				AFC44E1C259E456500226A8F /* KaleidoscopeUITests */,
