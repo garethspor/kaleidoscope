@@ -88,8 +88,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         cameraUnavailableLabel.isHidden = true;
         resumeButton.isHidden = true;
 
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(focusAndExposeTap))
-//        previewView.addGestureRecognizer(tapGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showHideDots))
+        previewView.addGestureRecognizer(tapGesture)
 
         let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
         leftSwipeGesture.direction = .left
@@ -584,6 +584,21 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
 
     // MARK: - IBAction Functions
+
+    @IBAction private func showHideDots(_ gesture: UITapGestureRecognizer) {
+        guard dotViews.count > 0 else {
+            print("no dots")
+            return
+        }
+
+        let nextAlpha = 1.0 - dotViews.first!.alpha
+
+        UIView.animate(withDuration: 0.25, animations: {
+            for dot in self.dotViews {
+                dot.alpha = nextAlpha
+            }
+        })
+    }
 
     @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
         switch gesture.state {
