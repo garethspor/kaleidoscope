@@ -635,6 +635,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                                            videoRect.origin.y + videoRect.height - translatedFrame.height)
             unwrappedDraggingDot.transform = .identity
             unwrappedDraggingDot.frame = translatedFrame
+            updateMirrorCorners()
 
             draggingDot = .none
 
