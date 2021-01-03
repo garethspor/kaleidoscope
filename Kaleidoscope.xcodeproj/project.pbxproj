@@ -49,7 +49,7 @@
 		AF2A7E3425A183A300FAFE02 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AF2A7E4425A18BC500FAFE02 /* KaleidoscopeRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaleidoscopeRenderer.swift; sourceTree = "<group>"; };
 		AF2A7E4925A18BD200FAFE02 /* Kaleidoscope.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Kaleidoscope.metal; sourceTree = "<group>"; };
-		AFC44DF8259E456200226A8F /* Kaleidoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaleidoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AFC44DF8259E456200226A8F /* KaleidoSpor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KaleidoSpor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44DFB259E456200226A8F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFD259E456200226A8F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFF259E456200226A8F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 		AFC44DF9259E456200226A8F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AFC44DF8259E456200226A8F /* Kaleidoscope.app */,
+				AFC44DF8259E456200226A8F /* KaleidoSpor.app */,
 				AFC44E0E259E456500226A8F /* KaleidoscopeTests.xctest */,
 				AFC44E19259E456500226A8F /* KaleidoscopeUITests.xctest */,
 			);
@@ -179,7 +179,7 @@
 			);
 			name = Kaleidoscope;
 			productName = Kaleidoscope;
-			productReference = AFC44DF8259E456200226A8F /* Kaleidoscope.app */;
+			productReference = AFC44DF8259E456200226A8F /* KaleidoSpor.app */;
 			productType = "com.apple.product-type.application";
 		};
 		AFC44E0D259E456500226A8F /* KaleidoscopeTests */ = {
@@ -487,7 +487,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = spor.Kaleidoscope;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = KaleidoSpor;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -507,7 +507,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = spor.Kaleidoscope;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = KaleidoSpor;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
