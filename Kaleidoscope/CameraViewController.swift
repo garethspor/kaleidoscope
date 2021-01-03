@@ -637,7 +637,14 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 return
             }
             // Reset the dot's frame after resetting its transform, so next drag event will work properly
-            let translatedFrame = unwrappedDraggingDot.frame
+            var translatedFrame = unwrappedDraggingDot.frame
+            // TODO: store actual texture bounds somewhere and use those instead of the previewView.frame which overlaps with the buttons too much
+            translatedFrame.origin.x = max(translatedFrame.origin.x, previewView.frame.origin.x)
+            translatedFrame.origin.y = max(translatedFrame.origin.y, previewView.frame.origin.y)
+            translatedFrame.origin.x = min(translatedFrame.origin.x,
+                                           previewView.frame.origin.x + previewView.frame.width - translatedFrame.width)
+            translatedFrame.origin.y = min(translatedFrame.origin.y,
+                                           previewView.frame.origin.y + previewView.frame.height - translatedFrame.height)
             unwrappedDraggingDot.transform = .identity
             unwrappedDraggingDot.frame = translatedFrame
 
