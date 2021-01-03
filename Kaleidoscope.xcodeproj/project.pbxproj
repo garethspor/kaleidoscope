@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AF2A7E12259EAA3D00FAFE02 /* Kaleidoscope.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */; };
 		AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */; };
 		AF2A7E20259F78B600FAFE02 /* Kaleidoscope2.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */; };
 		AF2A7E2525A0165900FAFE02 /* LineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E2425A0165900FAFE02 /* LineSegment.swift */; };
@@ -45,7 +44,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Kaleidoscope.metal; sourceTree = "<group>"; };
 		AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PassThroughMetal.metal; sourceTree = "<group>"; };
 		AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kaleidoscope2.metal; sourceTree = "<group>"; };
 		AF2A7E2425A0165900FAFE02 /* LineSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineSegment.swift; sourceTree = "<group>"; };
@@ -101,7 +99,6 @@
 			isa = PBXGroup;
 			children = (
 				AF2A7E16259EAA5000FAFE02 /* PassThroughMetal.metal */,
-				AF2A7E11259EAA3D00FAFE02 /* Kaleidoscope.metal */,
 				AF2A7E1F259F78B600FAFE02 /* Kaleidoscope2.metal */,
 			);
 			path = Shaders;
@@ -307,7 +304,6 @@
 				AFC44E3C259E612E00226A8F /* FilterRenderer.swift in Sources */,
 				AFC44E2F259E465000226A8F /* CameraViewController.swift in Sources */,
 				AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */,
-				AF2A7E12259EAA3D00FAFE02 /* Kaleidoscope.metal in Sources */,
 				AF2A7E20259F78B600FAFE02 /* Kaleidoscope2.metal in Sources */,
 				AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */,
 				AF2A7E2525A0165900FAFE02 /* LineSegment.swift in Sources */,

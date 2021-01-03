@@ -20,8 +20,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var cameraUnavailableLabel: UILabel!
 
-    @IBOutlet weak private var filterLabel: UILabel!
-
     @IBOutlet weak private var previewView: PreviewMetalView!
 
     private enum SessionSetupResult {
@@ -50,15 +48,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private let photoOutput = AVCapturePhotoOutput()
 
-    private let filterRenderers: [FilterRenderer] = [Kaleidoscope2Renderer(), KaleidoscopeRenderer()]
+    private var videoFilter: FilterRenderer = Kaleidoscope2Renderer()
 
-    private let photoRenderers: [FilterRenderer] = [Kaleidoscope2Renderer(), KaleidoscopeRenderer()]
-
-    private var filterIndex: Int = 0
-
-    private var videoFilter: FilterRenderer?
-
-    private var photoFilter: FilterRenderer?
+    private var photoFilter: FilterRenderer = Kaleidoscope2Renderer()
 
     private var renderingEnabled = true
 
@@ -90,14 +82,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showHideDots))
         previewView.addGestureRecognizer(tapGesture)
-
-        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
-        leftSwipeGesture.direction = .left
-        previewView.addGestureRecognizer(leftSwipeGesture)
-
-        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(changeFilterSwipe))
-        rightSwipeGesture.direction = .right
-        previewView.addGestureRecognizer(rightSwipeGesture)
 
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
         previewView.addGestureRecognizer(panGesture)
@@ -138,8 +122,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         sessionQueue.async {
             self.configureSession()
         }
-        let filterDescription = filterRenderers[filterIndex].description
-        updateFilterLabel(description: filterDescription)
 
         let imageName = "dot.png"
         let image = UIImage(named: imageName)
@@ -252,16 +234,12 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         // Free up resources.
         dataOutputQueue.async {
             self.renderingEnabled = false
-            if let videoFilter = self.videoFilter {
-                videoFilter.reset()
-            }
+            self.videoFilter.reset()
             self.previewView.pixelBuffer = nil
             self.previewView.flushTextureCache()
         }
         processingQueue.async {
-            if let photoFilter = self.photoFilter {
-                photoFilter.reset()
-            }
+            self.photoFilter.reset()
         }
     }
 
@@ -468,14 +446,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         session.commitConfiguration()
         dataOutputQueue.async {
-            if let filter = self.videoFilter {
-                filter.reset()
-            }
-            if let filter = self.photoFilter {
-                filter.reset()
-            }
-            self.videoFilter = self.filterRenderers[self.filterIndex]
-            self.photoFilter = self.photoRenderers[self.filterIndex]
+            self.videoFilter.reset()
+            self.photoFilter.reset()
         }
     }
 
@@ -655,33 +627,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
     }
 
-    @IBAction private func changeFilterSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.direction == .left {
-            filterIndex = (filterIndex + 1) % filterRenderers.count
-        } else if gesture.direction == .right {
-            filterIndex = (filterIndex + filterRenderers.count - 1) % filterRenderers.count
-        }
-
-        let newIndex = filterIndex
-        let filterDescription = filterRenderers[newIndex].description
-        updateFilterLabel(description: filterDescription)
-
-        // Switch renderers
-        dataOutputQueue.async {
-            if let filter = self.videoFilter {
-                filter.reset()
-            }
-            self.videoFilter = self.filterRenderers[newIndex]
-        }
-
-        processingQueue.async {
-            if let filter = self.photoFilter {
-                filter.reset()
-            }
-            self.photoFilter = self.photoRenderers[newIndex]
-        }
-    }
-
 //    @IBAction private func focusAndExposeTap(_ gesture: UITapGestureRecognizer) {
 //        let location = gesture.location(in: previewView)
 //        guard let texturePoint = previewView.texturePointForView(point: location) else {
@@ -705,16 +650,12 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         dataOutputQueue.sync {
             renderingEnabled = false
-            if let filter = videoFilter {
-                filter.reset()
-            }
+            videoFilter.reset()
             previewView.pixelBuffer = nil
         }
 
         processingQueue.async {
-            if let filter = self.photoFilter {
-                filter.reset()
-            }
+            self.photoFilter.reset()
         }
 
         let interfaceOrientation = statusBarOrientation
@@ -819,22 +760,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
     }
 
-    // MARK: - UI Utility Functions
-
-    func updateFilterLabel(description: String) {
-        filterLabel.text = description
-        filterLabel.alpha = 0.0
-        filterLabel.isHidden = false
-
-        UIView.animate(withDuration: 0.25, animations: {
-            self.filterLabel.alpha = 1.0
-        }) { _ in
-            UIView.animate(withDuration: 0.25, delay: 1.0, options: [], animations: {
-                self.filterLabel.alpha = 0.0
-            }, completion: { _ in })
-        }
-    }
-
     // MARK: - Video Data Output Delegate
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
@@ -885,25 +810,23 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
 
         var finalVideoPixelBuffer = videoPixelBuffer
-        if let filter = videoFilter {
-            if !filter.isPrepared {
-                /*
-                 outputRetainedBufferCountHint is the number of pixel buffers the renderer retains. This value informs the renderer
-                 how to size its buffer pool and how many pixel buffers to preallocate. Allow 3 frames of latency to cover the dispatch_async call.
-                 */
-                filter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
-            }
-
-            setFilterParams(filter)
-
-            // Send the pixel buffer through the filter
-            guard let filteredBuffer = filter.render(pixelBuffer: finalVideoPixelBuffer) else {
-                print("Unable to filter video buffer")
-                return
-            }
-
-            finalVideoPixelBuffer = filteredBuffer
+        if !videoFilter.isPrepared {
+            /*
+             outputRetainedBufferCountHint is the number of pixel buffers the renderer retains. This value informs the renderer
+             how to size its buffer pool and how many pixel buffers to preallocate. Allow 3 frames of latency to cover the dispatch_async call.
+             */
+            videoFilter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
         }
+
+        setFilterParams(videoFilter)
+
+        // Send the pixel buffer through the filter
+        guard let filteredBuffer = videoFilter.render(pixelBuffer: finalVideoPixelBuffer) else {
+            print("Unable to filter video buffer")
+            return
+        }
+
+        finalVideoPixelBuffer = filteredBuffer
 
         previewView.pixelBuffer = finalVideoPixelBuffer
     }
@@ -945,21 +868,19 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         processingQueue.async {
             var finalPixelBuffer = photoPixelBuffer
-            if let filter = self.photoFilter {
-                if !filter.isPrepared {
-                    if let unwrappedPhotoFormatDescription = photoFormatDescription {
-                        filter.prepare(with: unwrappedPhotoFormatDescription, outputRetainedBufferCountHint: 2)
-                    }
+            if !self.photoFilter.isPrepared {
+                if let unwrappedPhotoFormatDescription = photoFormatDescription {
+                    self.photoFilter.prepare(with: unwrappedPhotoFormatDescription, outputRetainedBufferCountHint: 2)
                 }
-
-                self.setFilterParams(filter)
-
-                guard let filteredPixelBuffer = filter.render(pixelBuffer: finalPixelBuffer) else {
-                    print("Unable to filter photo buffer")
-                    return
-                }
-                finalPixelBuffer = filteredPixelBuffer
             }
+
+            self.setFilterParams(self.photoFilter)
+
+            guard let filteredPixelBuffer = self.photoFilter.render(pixelBuffer: finalPixelBuffer) else {
+                print("Unable to filter photo buffer")
+                return
+            }
+            finalPixelBuffer = filteredPixelBuffer
 
             let metadataAttachments: CFDictionary = photo.metadata as CFDictionary
             guard let jpegData = CameraViewController.jpegData(withPixelBuffer: finalPixelBuffer, attachments: metadataAttachments) else {
