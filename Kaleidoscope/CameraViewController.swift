@@ -143,7 +143,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         let imageName = "dot.png"
         let image = UIImage(named: imageName)
-        let initialDotCoords = [[100, 200], [200, 200], [200, 300]]
+        let initialDotCoords = [[274, 272], [191, 200], [196, 443]]
+
         let dotSize = 20
         for coords in initialDotCoords {
             let imageView = UIImageView(image: image!)
