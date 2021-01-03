@@ -835,23 +835,21 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     func updateMirrorCorners() {
         var corners: [Vec2f] = []
+
+        // Unfortunate assumption to have to make
+        // TODO: see what we can do instead?
+        let imageAspectRatio: Float = 4.0 / 3.0
+
+        let imageWidth = Float(previewView.frame.size.width)
+        let imageHeight = imageWidth * imageAspectRatio
+        let imageYStart = (Float(previewView.frame.size.height) - imageHeight) / 2.0 + Float(previewView.frame.origin.y)
         for dot in dotViews {
-            var point: CGPoint = dot.frame.origin
-            point.x -= dot.frame.width / 2
-            point.y -= dot.frame.height / 2
+            var point = Vec2f(x: Float(dot.frame.origin.x), y: Float(dot.frame.origin.y))
+            point.x += Float(dot.frame.width) / 2
+            point.y += Float(dot.frame.height) / 2 - imageYStart
 
-            guard let texturePoint = previewView.normalizedTexturePointForView(point: point) else {
-                print("no texture point!")
-                let almostCorner = Vec2f(x: Float(point.y) / 620 - 0.26,
-                                         y: 0.725 - Float(point.x) / 620)
-                corners.append(almostCorner)
-                continue
-            }
-
-            let xOffset: Float = -0.0375
-            let yOffset: Float = -0.0375
-            let corner = Vec2f(x: Float(texturePoint.x) + xOffset,
-                               y: Float(texturePoint.y) + yOffset)
+            let corner = Vec2f(x: point.y / imageHeight,
+                               y: (imageWidth - point.x) / imageHeight)
             corners.append(corner)
         }
         mirrorCorners = corners
