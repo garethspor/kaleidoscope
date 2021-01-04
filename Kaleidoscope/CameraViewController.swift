@@ -24,7 +24,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var brightnessSlider : UISlider!
     @IBOutlet weak private var transparencySlider : UISlider!
-    @IBOutlet weak private var maxReflectionsSlider : UISlider!
     @IBOutlet private var renderingViews: [UIView]!
 
     private var kaleidoscopeFilterParams = KaleidoscopeFilterParams(numSegments: 3, mirrored: false, brightness: 0.8, transparency: 0.2, maxReflections: 64)
@@ -171,7 +170,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         brightnessSlider.value = kaleidoscopeFilterParams.brightness
         transparencySlider.value = kaleidoscopeFilterParams.transparency
-        maxReflectionsSlider.value = Float(kaleidoscopeFilterParams.maxReflections)
 
         // Cache this constant value to allow any thread to access it
         previewViewFrame = previewView.frame
@@ -724,10 +722,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBAction private func changeTransparencySlider(_ sender: UISlider) {
         kaleidoscopeFilterParams.transparency = sender.value
-    }
-
-    @IBAction private func changeMaxReflectionsSlider(_ sender: UISlider) {
-        kaleidoscopeFilterParams.maxReflections = Int(sender.value)
     }
 
     @IBAction private func changeCamera(_ sender: UIButton) {

@@ -58,22 +58,8 @@
                                     <action selector="changeBrightnessSlider:" destination="BYZ-38-t0r" eventType="valueChanged" id="GaS-IL-1wj"/>
                                 </connections>
                             </slider>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="64" minValue="0.0" maxValue="128" translatesAutoresizingMaskIntoConstraints="NO" id="1Ru-mH-QGC">
-                                <rect key="frame" x="18" y="280" width="232" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="changeMaxReflectionsSlider:" destination="BYZ-38-t0r" eventType="valueChanged" id="MWD-tY-iWO"/>
-                                </connections>
-                            </slider>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Reflectivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ABt-5q-wvH">
                                 <rect key="frame" x="265" y="202" width="146" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <color key="textColor" systemColor="systemOrangeColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Max Reflections" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3EJ-FT-qnE">
-                                <rect key="frame" x="266" y="279" width="191" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <color key="textColor" systemColor="systemOrangeColor"/>
@@ -101,7 +87,6 @@
                         <outlet property="brightnessSlider" destination="LFg-h5-kaj" id="bbB-BN-2xh"/>
                         <outlet property="cameraButton" destination="Xmw-xl-vsm" id="fCI-VE-L7W"/>
                         <outlet property="cameraUnavailableLabel" destination="oEy-Sm-l2L" id="mfO-nt-poL"/>
-                        <outlet property="maxReflectionsSlider" destination="1Ru-mH-QGC" id="B8v-L2-HtK"/>
                         <outlet property="photoButton" destination="MsC-Qh-QrI" id="jGG-0D-GGm"/>
                         <outlet property="previewView" destination="aBv-5c-jfI" id="Zw6-0F-yhU"/>
                         <outlet property="resumeButton" destination="Jew-sj-bQL" id="0lo-XG-2UO"/>
@@ -110,8 +95,6 @@
                         <outletCollection property="renderingViews" destination="LFg-h5-kaj" collectionClass="NSMutableArray" id="jjy-bL-bt4"/>
                         <outletCollection property="renderingViews" destination="Hxh-24-KwQ" collectionClass="NSMutableArray" id="0Tv-eg-pET"/>
                         <outletCollection property="renderingViews" destination="01g-aW-DFM" collectionClass="NSMutableArray" id="40U-8Q-WEo"/>
-                        <outletCollection property="renderingViews" destination="1Ru-mH-QGC" collectionClass="NSMutableArray" id="2S2-Cg-cVD"/>
-                        <outletCollection property="renderingViews" destination="3EJ-FT-qnE" collectionClass="NSMutableArray" id="hix-Rg-4cn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
