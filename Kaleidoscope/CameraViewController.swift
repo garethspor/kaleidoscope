@@ -73,7 +73,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     private var draggingDot: UIView?
 
     // Positions of kaleidoscope mirrors
-    private var mirrorCorners: [Vec2f]?
+    private var mirrorCorners: [CGPoint]?
 
     // Bounding rect of video stream in screen coords
     private var currentVideoRect: CGRect?
@@ -866,16 +866,16 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             print ("videoRect unset")
             return
         }
-        var corners: [Vec2f] = []
+        var corners: [CGPoint] = []
 
         for dot in dotViews {
             // TODO: fix this in case view is wider than image, currently broken
-            var point = Vec2f(x: Float(dot.frame.origin.x), y: Float(dot.frame.origin.y))
-            point.x += Float(dot.frame.width) / 2
-            point.y += Float(dot.frame.height) / 2 - Float(videoRect.origin.y)
+            var point = CGPoint(x: CGFloat(dot.frame.origin.x), y: CGFloat(dot.frame.origin.y))
+            point.x += dot.frame.width / 2
+            point.y += dot.frame.height / 2 - videoRect.origin.y
 
-            let corner = Vec2f(x: point.y / Float(videoRect.size.height),
-                               y: (Float(videoRect.size.width) - point.x) / Float(videoRect.size.height))
+            let corner = CGPoint(x: CGFloat(point.y / videoRect.size.height),
+                                 y: CGFloat((videoRect.size.width - point.x) / videoRect.size.height))
             corners.append(corner)
         }
         mirrorCorners = corners

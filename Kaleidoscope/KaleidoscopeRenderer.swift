@@ -30,7 +30,7 @@ class KaleidoscopeRenderer: FilterRenderer {
         return self.metalDevice.makeCommandQueue()
     }()
 
-    var mirrorCorners: [Vec2f]?
+    var mirrorCorners: [CGPoint]?
 
     required init() {
         let defaultLibrary = metalDevice.makeDefaultLibrary()!
