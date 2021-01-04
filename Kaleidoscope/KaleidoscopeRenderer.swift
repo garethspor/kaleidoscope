@@ -107,9 +107,8 @@ class KaleidoscopeRenderer: FilterRenderer {
 
         var mirrorCoords: [Float] = []
         for i in 0..<unwrappedMirrorCorners.count {
-            let segement = MakeLineSegment(p0: unwrappedMirrorCorners[i],
-                                           p1: unwrappedMirrorCorners[(i + 1) % unwrappedMirrorCorners.count])
-            mirrorCoords += ConvertLineSegmentToFloats(segment: segement)
+            mirrorCoords += LineSegment(p0: unwrappedMirrorCorners[i],
+                                        p1: unwrappedMirrorCorners[(i + 1) % unwrappedMirrorCorners.count]).asFloats
         }
 
         guard var unwrappedFilterParams = filterParams else {

@@ -11,53 +11,34 @@ import CoreVideo
 struct LineSegment {
     var p0: CGPoint
     var p1: CGPoint
-
+    
     // Precompute the following values for shaders
-    // point1 - point0
-    var vec: CGPoint
-
+    var vec: CGPoint { get { return CGPoint(x: p1.x - p0.x, y: p1.y - p0.y) }}
     // Ax + By + C = 0;
-    var coefA: CGFloat = 0.0
-    var coefB: CGFloat = 0.0
-    var coefC: CGFloat = 0.0
-    var coefBASquaredDiff: CGFloat = 0.0;  // B^2 - A^2
-    var coefABSquaredSum: CGFloat = 0.0;  // A^2 + B^2
-    var twoAB: CGFloat = 0.0;  // 2 * A * B
-    var twoAC: CGFloat = 0.0;  // 2 * A * C
-    var twoBC: CGFloat = 0.0;  // 2 * B * C
+    var coefA: CGFloat { get { return p0.y - p1.y }}
+    var coefB: CGFloat { get { return p1.x - p0.x }}
+    var coefC: CGFloat { get { return p0.x * p1.y - p1.x * p0.y }}
+    var coefBASquaredDiff: CGFloat { get { return coefB * coefB - coefA * coefA }}
+    var coefABSquaredSum: CGFloat { get { return coefA * coefA + coefB * coefB }}
+    var twoAB: CGFloat { get { return 2.0 * coefA * coefB }}
+    var twoAC: CGFloat { get { return 2.0 * coefA * coefC }}
+    var twoBC: CGFloat { get { return 2.0 * coefB * coefC }}
+    
+    // Convert to floats to be compatable with LineSegment struct in metal shader
+    var asFloats: [Float] {
+        get {
+            return [Float(p0.x), Float(p0.y),
+                    Float(p1.x), Float(p1.y),
+                    Float(vec.x), Float(vec.y),
+                    Float(coefA),
+                    Float(coefB),
+                    Float(coefC),
+                    Float(coefBASquaredDiff),
+                    Float(coefABSquaredSum),
+                    Float(twoAB),
+                    Float(twoAC),
+                    Float(twoBC)]
+        }
+    }
 };
 
-func MakeLineSegment(p0: CGPoint, p1: CGPoint) -> LineSegment {
-    let coefA: CGFloat = p0.y - p1.y
-    let coefB: CGFloat = p1.x - p0.x
-    let coefC: CGFloat = p0.x * p1.y - p1.x * p0.y
-    return LineSegment(
-        p0: p0, p1: p1,
-        vec: CGPoint(x: p1.x - p0.x, y: p1.y - p0.y),
-        coefA: coefA, coefB: coefB, coefC: coefC,
-        coefBASquaredDiff: coefB * coefB - coefA * coefA,
-        coefABSquaredSum: coefA * coefA + coefB * coefB,
-        twoAB: 2.0 * coefA * coefB,
-        twoAC: 2.0 * coefA * coefC,
-        twoBC: 2.0 * coefB * coefC
-    )
-}
-
-func ConvertLineSegmentToFloats(segment: LineSegment) -> [Float] {
-    return [
-        Float(segment.p0.x),
-        Float(segment.p0.y),
-        Float(segment.p1.x),
-        Float(segment.p1.y),
-        Float(segment.vec.x),
-        Float(segment.vec.y),
-        Float(segment.coefA),
-        Float(segment.coefB),
-        Float(segment.coefC),
-        Float(segment.coefBASquaredDiff),
-        Float(segment.coefABSquaredSum),
-        Float(segment.twoAB),
-        Float(segment.twoAC),
-        Float(segment.twoBC)
-    ]
-}
