@@ -42,3 +42,22 @@ func MakeLineSegment(p0: CGPoint, p1: CGPoint) -> LineSegment {
         twoBC: 2.0 * coefB * coefC
     )
 }
+
+func ConvertLineSegmentToFloats(segment: LineSegment) -> [Float] {
+    return [
+        Float(segment.p0.x),
+        Float(segment.p0.y),
+        Float(segment.p1.x),
+        Float(segment.p1.y),
+        Float(segment.vec.x),
+        Float(segment.vec.y),
+        Float(segment.coefA),
+        Float(segment.coefB),
+        Float(segment.coefC),
+        Float(segment.coefBASquaredDiff),
+        Float(segment.coefABSquaredSum),
+        Float(segment.twoAB),
+        Float(segment.twoAC),
+        Float(segment.twoBC)
+    ]
+}
