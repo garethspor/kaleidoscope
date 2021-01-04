@@ -105,16 +105,20 @@ class KaleidoscopeRenderer: FilterRenderer {
             return nil
         }
 
-        // TODO: auto generate
-        let mirrors: [LineSegment] = [
-            MakeLineSegment(p0: unwrappedMirrorCorners[0], p1: unwrappedMirrorCorners[1]),
-            MakeLineSegment(p0: unwrappedMirrorCorners[1], p1: unwrappedMirrorCorners[2]),
-            MakeLineSegment(p0: unwrappedMirrorCorners[2], p1: unwrappedMirrorCorners[0]),
-        ]
+        var mirrors: [LineSegment] = []
+        for i in 0..<unwrappedMirrorCorners.count {
+            mirrors.append(MakeLineSegment(p0: unwrappedMirrorCorners[i],
+                                           p1: unwrappedMirrorCorners[(i + 1) % unwrappedMirrorCorners.count]))
+        }
 
         guard var unwrappedFilterParams = filterParams else {
             print("filterParams unset")
             CVMetalTextureCacheFlush(textureCache!, 0)
+            return nil
+        }
+
+        guard unwrappedFilterParams.numSegments == unwrappedMirrorCorners.count else {
+            print("Error: filterParams.numSegments: \(unwrappedFilterParams.numSegments) != mirrorCorners.count: \(unwrappedMirrorCorners.count)")
             return nil
         }
 
