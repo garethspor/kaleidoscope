@@ -8,7 +8,7 @@ import CoreVideo
 import Photos
 import MobileCoreServices
 
-class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureDepthDataOutputDelegate, AVCaptureDataOutputSynchronizerDelegate {
+class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     // MARK: - Properties
 
@@ -48,9 +48,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     private let dataOutputQueue = DispatchQueue(label: "VideoDataQueue", qos: .userInitiated, attributes: [], autoreleaseFrequency: .workItem)
 
     private let videoDataOutput = AVCaptureVideoDataOutput()
-
-    // TODO(spor): What's this?
-    private var outputSynchronizer: AVCaptureDataOutputSynchronizer?
 
     private let photoOutput = AVCapturePhotoOutput()
 
@@ -929,19 +926,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         finalVideoPixelBuffer = filteredBuffer
 
         previewView.pixelBuffer = finalVideoPixelBuffer
-    }
-
-    // MARK: - Video + Depth Output Synchronizer Delegate
-
-    // TODO(SPOR): understand this
-    func dataOutputSynchronizer(_ synchronizer: AVCaptureDataOutputSynchronizer, didOutput synchronizedDataCollection: AVCaptureSynchronizedDataCollection) {
-
-        if let syncedVideoData: AVCaptureSynchronizedSampleBufferData = synchronizedDataCollection.synchronizedData(for: videoDataOutput) as? AVCaptureSynchronizedSampleBufferData {
-            if !syncedVideoData.sampleBufferWasDropped {
-                let videoSampleBuffer = syncedVideoData.sampleBuffer
-                processVideo(sampleBuffer: videoSampleBuffer)
-            }
-        }
     }
 
     // MARK: - Photo Output Delegate
