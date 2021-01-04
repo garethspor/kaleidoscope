@@ -10,7 +10,7 @@ class KaleidoscopeRenderer: FilterRenderer {
 
     var description: String = "Kaleidoscope"
 
-    var mirrored: Bool = false;
+    var filterParams: KaleidoscopeFilterParams?
 
     var isPrepared = false
 
@@ -73,11 +73,6 @@ class KaleidoscopeRenderer: FilterRenderer {
 
     /// - Tag: Kaleidoscope Metal
 
-    private struct FilterParams {
-        var numSegments: Int = 3
-        var mirrored: Bool = false
-      }
-
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
         if !isPrepared {
             assertionFailure("Invalid state: Not prepared.")
@@ -104,11 +99,6 @@ class KaleidoscopeRenderer: FilterRenderer {
                 return nil
         }
 
-        var params = FilterParams(
-            numSegments: 3,
-            mirrored: mirrored
-        )
-
         guard let unwrappedMirrorCorners = mirrorCorners else {
             print("mirrorCorners unset")
             CVMetalTextureCacheFlush(textureCache!, 0)
@@ -122,16 +112,21 @@ class KaleidoscopeRenderer: FilterRenderer {
             MakeLineSegment(p0: unwrappedMirrorCorners[2], p1: unwrappedMirrorCorners[0]),
         ]
 
+        guard var unwrappedFilterParams = filterParams else {
+            print("filterParams unset")
+            CVMetalTextureCacheFlush(textureCache!, 0)
+            return nil
+        }
 
         commandEncoder.label = "Kaleidoscope"
         commandEncoder.setComputePipelineState(computePipelineState!)
         commandEncoder.setTexture(inputTexture, index: 0)
         commandEncoder.setTexture(outputTexture, index: 1)
-        commandEncoder.setBytes(&params,
-                                length: MemoryLayout<FilterParams>.stride,
+        commandEncoder.setBytes(&unwrappedFilterParams,
+                                length: MemoryLayout<KaleidoscopeFilterParams>.stride,
                                 index: 0)
         commandEncoder.setBytes(mirrors,
-                                length: MemoryLayout<LineSegment>.stride * params.numSegments,
+                                length: MemoryLayout<LineSegment>.stride * mirrors.count,
                                 index: 1)
 
         // Set up the thread groups.

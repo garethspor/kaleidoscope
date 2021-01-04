@@ -22,9 +22,12 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var previewView: PreviewMetalView!
 
-    @IBOutlet weak private var reflectivitySlider : UISlider!
+    @IBOutlet weak private var brightnessSlider : UISlider!
     @IBOutlet weak private var transparencySlider : UISlider!
+    @IBOutlet weak private var maxReflectionsSlider : UISlider!
     @IBOutlet private var renderingViews: [UIView]!
+
+    private var kaleidoscopeFilterParams = KaleidoscopeFilterParams(numSegments: 3, mirrored: false, brightness: 0.8, transparency: 0.2, maxReflections: 64)
 
     private enum SessionSetupResult {
         case success
@@ -165,6 +168,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         for view in renderingViews {
             view.alpha = 0.0
         }
+
+        brightnessSlider.value = kaleidoscopeFilterParams.brightness
+        transparencySlider.value = kaleidoscopeFilterParams.transparency
+        maxReflectionsSlider.value = Float(kaleidoscopeFilterParams.maxReflections)
 
         // Cache this constant value to allow any thread to access it
         previewViewFrame = previewView.frame
@@ -711,6 +718,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 //        focus(with: .continuousAutoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
 
+    @IBAction private func changeBrightnessSlider(_ sender: UISlider) {
+        kaleidoscopeFilterParams.brightness = sender.value
+    }
+
+    @IBAction private func changeTransparencySlider(_ sender: UISlider) {
+        kaleidoscopeFilterParams.transparency = sender.value
+    }
+
+    @IBAction private func changeMaxReflectionsSlider(_ sender: UISlider) {
+        kaleidoscopeFilterParams.maxReflections = Int(sender.value)
+    }
+
     @IBAction private func changeCamera(_ sender: UIButton) {
         cameraButton.isEnabled = false
         photoButton.isEnabled = false
@@ -875,7 +894,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         guard let renderer = filter as? KaleidoscopeRenderer else {
             return
         }
-        renderer.mirrored = previewView.mirroring
+
+        kaleidoscopeFilterParams.mirrored = previewView.mirroring
+        renderer.filterParams = kaleidoscopeFilterParams
+
         guard let unwrappedMirrorCorners = mirrorCorners else {
             print("mirrorCorners unset")
             return

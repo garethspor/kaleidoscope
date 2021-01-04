@@ -8,11 +8,13 @@
 #include <metal_stdlib>
 using namespace metal;
 
-// TODO: figure out why bool has to come after int
+// Note: using longs to match stride of swift Int (8 bytes)
 struct FilterParams {
-    int numSegments = 3;
-    int filler = 0;  // WAR to match packing format of Swift struct
+    long numSegments = 0;
     bool mirrored = false;
+    float brightness = 0.0;
+    float transparency = 0.0;
+    long maxReflections = 0;
 };
 
 struct LineSegment {
@@ -99,16 +101,12 @@ kernel void kaleidoscope(texture2d<half, access::read>  inputTexture  [[ texture
     const float gridY = params->mirrored ? inputTexture.get_height() - 1 - gid.y : gid.y;
     float2 target(float(gid.x) / maxSize, gridY / maxSize);
 
-    constexpr int MAX_REFLECTIONS = 64;
-    constexpr float MIRROR_BRIGHTNESS = 0.8;
-    constexpr float MIRROR_TRANSPARENCY = 0.2;
-
     half4 color = Sample(inputTexture, target, params->mirrored, maxSize);
 
     int numReflections = 0;
     int lastReflectionSegment = -1;
-    float brightness = MIRROR_BRIGHTNESS;
-    while (numReflections < MAX_REFLECTIONS) {
+    float brightness = params->brightness;
+    while (numReflections < params->maxReflections) {
         bool reflected = false;
         for (int i = 0; i < params->numSegments; ++i) {
             if (i == lastReflectionSegment) {
@@ -116,13 +114,13 @@ kernel void kaleidoscope(texture2d<half, access::read>  inputTexture  [[ texture
             }
             // For now, just go with the 1st intersection. For more complex shapes, we'll need to use the closest intersection.
             if (Intersects(center, target, mirrors[i])) {
-                color.rgb *= MIRROR_TRANSPARENCY;
+                color.rgb *= params->transparency;
 
                 target = Reflect(target, mirrors[i]);
                 half4 newColor = Sample(inputTexture, target, params->mirrored, maxSize);
-                color.rgb += (1.0 - MIRROR_TRANSPARENCY) * brightness * newColor.rgb;
+                color.rgb += (1.0 - params->transparency) * brightness * newColor.rgb;
 
-                brightness *= MIRROR_BRIGHTNESS;
+                brightness *= params->brightness;
 
                 lastReflectionSegment = i;
                 ++numReflections;
