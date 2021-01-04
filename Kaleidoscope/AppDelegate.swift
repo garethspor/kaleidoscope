@@ -14,9 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        // Prevent screen from dimming while running
-        UIApplication.shared.isIdleTimerDisabled = true
-
         return true
     }
 

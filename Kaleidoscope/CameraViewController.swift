@@ -175,6 +175,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        // Prevent the device from sleeping.
+        UIApplication.shared.isIdleTimerDisabled = true
+
         guard let interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
             fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
         }
@@ -259,6 +262,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 self.removeObservers()
             }
         }
+
+        // Allow the device to sleep.
+        UIApplication.shared.isIdleTimerDisabled = false
 
         super.viewWillDisappear(animated)
     }
