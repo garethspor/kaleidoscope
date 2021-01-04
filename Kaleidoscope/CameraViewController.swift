@@ -321,40 +321,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
     }
 
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .all
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        coordinator.animate(
-            alongsideTransition: { _ in
-                let interfaceOrientation = UIApplication.shared.statusBarOrientation
-                self.statusBarOrientation = interfaceOrientation
-                self.sessionQueue.async {
-                    /*
-                     The photo orientation is based on the interface orientation. You could also set the orientation of the photo connection based
-                     on the device orientation by observing UIDeviceOrientationDidChangeNotification.
-                     */
-                    if let photoOrientation = AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) {
-                        if let unwrappedPhotoOutputConnection = self.photoOutput.connection(with: .video) {
-                            unwrappedPhotoOutputConnection.videoOrientation = photoOrientation
-                        }
-                    }
-
-                    if let unwrappedVideoDataOutputConnection = self.videoDataOutput.connection(with: .video) {
-                        if let rotation = PreviewMetalView.Rotation(with: interfaceOrientation,
-                                                                    videoOrientation: unwrappedVideoDataOutputConnection.videoOrientation,
-                                                                    cameraPosition: self.videoInput.device.position) {
-                            self.previewView.rotation = rotation
-                        }
-                    }
-                }
-        }, completion: nil
-        )
-    }
-
     // MARK: - KVO and Notifications
 
     private var sessionRunningContext = 0

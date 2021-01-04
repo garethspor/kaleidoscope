@@ -12,14 +12,10 @@
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="CameraViewController" customModule="KaleidoSpor" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="PreviewMetalView" customModule="KaleidoSpor" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mtkView contentMode="scaleToFill" fixedFrame="YES" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="aBv-5c-jfI" customClass="PreviewMetalView" customModule="KaleidoSpor" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="44" width="414" height="808"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </mtkView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MsC-Qh-QrI">
                                 <rect key="frame" x="175" y="759.5" width="64" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -88,7 +84,7 @@
                         <outlet property="cameraButton" destination="Xmw-xl-vsm" id="fCI-VE-L7W"/>
                         <outlet property="cameraUnavailableLabel" destination="oEy-Sm-l2L" id="mfO-nt-poL"/>
                         <outlet property="photoButton" destination="MsC-Qh-QrI" id="jGG-0D-GGm"/>
-                        <outlet property="previewView" destination="aBv-5c-jfI" id="Zw6-0F-yhU"/>
+                        <outlet property="previewView" destination="8bC-Xf-vdC" id="D3J-l9-a0K"/>
                         <outlet property="resumeButton" destination="Jew-sj-bQL" id="0lo-XG-2UO"/>
                         <outlet property="transparencySlider" destination="Hxh-24-KwQ" id="xti-bF-qyb"/>
                         <outletCollection property="renderingViews" destination="ABt-5q-wvH" collectionClass="NSMutableArray" id="1Hu-xd-KNb"/>
