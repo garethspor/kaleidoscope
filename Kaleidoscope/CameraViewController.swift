@@ -78,6 +78,17 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // Cached value of previewView.frame so any thread an query it
     private var previewViewFrame: CGRect?
 
+    private enum UiControlMode {
+        // Dots marking mirror corners can be dragged and re-positioned
+        case draggableDots
+        // All controls are hidden, best mode to enjoy results
+        case controlsHidden
+    }
+
+    private var panGesture: UIPanGestureRecognizer?
+
+    private var uiControlMode: UiControlMode = .draggableDots
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -92,8 +103,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showHideDots))
         previewView.addGestureRecognizer(tapGesture)
 
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
-        previewView.addGestureRecognizer(panGesture)
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
+        previewView.addGestureRecognizer(panGesture!)
 
         // Check video authorization status, video access is required
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -571,23 +582,41 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // MARK: - IBAction Functions
 
     @IBAction private func showHideDots(_ gesture: UITapGestureRecognizer) {
+        var newDotAlpha: CGFloat?
+
+        switch uiControlMode {
+        case .draggableDots:
+            uiControlMode = .controlsHidden
+            newDotAlpha = 0.0
+            panGesture!.isEnabled = false
+
+        case .controlsHidden:
+            uiControlMode = .draggableDots
+            newDotAlpha = 1.0
+            panGesture!.isEnabled = true
+        }
+
         guard dotViews.count > 0 else {
             print("no dots")
             return
         }
 
-        let nextAlpha = 1.0 - dotViews.first!.alpha
-
-        UIView.animate(withDuration: 0.25, animations: {
-            for dot in self.dotViews {
-                dot.alpha = nextAlpha
-            }
-        })
+        if let unwrappedNextDotAlpha = newDotAlpha {
+            UIView.animate(withDuration: 0.25, animations: {
+                for dot in self.dotViews {
+                    dot.alpha = unwrappedNextDotAlpha
+                }
+            })
+        }
     }
 
     @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
         switch gesture.state {
         case .began:
+            guard uiControlMode == .draggableDots else {
+                gesture.state = .cancelled
+                return
+            }
             var distances: [Float] = []
             for dotView in dotViews {
                 var pos = gesture.location(in: dotView)
