@@ -17,11 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Prevent screen from dimming while running
         UIApplication.shared.isIdleTimerDisabled = true
 
-        print("Float stride: \(MemoryLayout<Float>.stride)")
-        print("Int stride: \(MemoryLayout<Int>.stride)")
-        print("CGFloat stride: \(MemoryLayout<CGFloat>.stride)")
-        print("Bool stride: \(MemoryLayout<Bool>.stride)")
-
         return true
     }
 
