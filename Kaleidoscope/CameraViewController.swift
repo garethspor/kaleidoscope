@@ -22,6 +22,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var previewView: PreviewMetalView!
 
+    @IBOutlet weak private var reflectivitySlider : UISlider!
+    @IBOutlet weak private var transparencySlider : UISlider!
+    @IBOutlet private var renderingViews: [UIView]!
+
     private enum SessionSetupResult {
         case success
         case notAuthorized
@@ -81,6 +85,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     private enum UiControlMode {
         // Dots marking mirror corners can be dragged and re-positioned
         case draggableDots
+        // Sliders to control rendering parameters
+        case renderingSliders
         // All controls are hidden, best mode to enjoy results
         case controlsHidden
     }
@@ -100,7 +106,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         cameraUnavailableLabel.isHidden = true;
         resumeButton.isHidden = true;
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showHideDots))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cycleUiControlMode))
         previewView.addGestureRecognizer(tapGesture)
 
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
@@ -155,6 +161,12 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             view.addSubview(imageView)
             dotViews.append(imageView)
         }
+
+        for view in renderingViews {
+            view.alpha = 0.0
+        }
+
+        // Cache this constant value to allow any thread to access it
         previewViewFrame = previewView.frame
     }
 
@@ -581,14 +593,20 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     // MARK: - IBAction Functions
 
-    @IBAction private func showHideDots(_ gesture: UITapGestureRecognizer) {
+    @IBAction private func cycleUiControlMode(_ gesture: UITapGestureRecognizer) {
         var newDotAlpha: CGFloat?
+        var newRenderingViewAlpha: CGFloat?
 
         switch uiControlMode {
         case .draggableDots:
-            uiControlMode = .controlsHidden
+            uiControlMode = .renderingSliders
             newDotAlpha = 0.0
+            newRenderingViewAlpha = 1.0
             panGesture!.isEnabled = false
+
+        case .renderingSliders:
+            uiControlMode = .controlsHidden
+            newRenderingViewAlpha = 0.0
 
         case .controlsHidden:
             uiControlMode = .draggableDots
@@ -596,15 +614,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             panGesture!.isEnabled = true
         }
 
-        guard dotViews.count > 0 else {
-            print("no dots")
-            return
-        }
-
         if let unwrappedNextDotAlpha = newDotAlpha {
             UIView.animate(withDuration: 0.25, animations: {
                 for dot in self.dotViews {
                     dot.alpha = unwrappedNextDotAlpha
+                }
+            })
+        }
+
+        if let unwrappedNewRenderingViewAlpha = newRenderingViewAlpha {
+            UIView.animate(withDuration: 0.25, animations: {
+                for view in self.renderingViews {
+                    view.alpha = unwrappedNewRenderingViewAlpha
                 }
             })
         }

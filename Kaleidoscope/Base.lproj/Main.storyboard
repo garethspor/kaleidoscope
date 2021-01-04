@@ -11,12 +11,12 @@
         <!--Camera View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="CameraViewController" customModule="Kaleidoscope" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="CameraViewController" customModule="KaleidoSpor" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mtkView contentMode="scaleToFill" fixedFrame="YES" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="aBv-5c-jfI" customClass="PreviewMetalView" customModule="Kaleidoscope" customModuleProvider="target">
+                            <mtkView contentMode="scaleToFill" fixedFrame="YES" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="aBv-5c-jfI" customClass="PreviewMetalView" customModule="KaleidoSpor" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="44" width="414" height="808"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </mtkView>
@@ -51,6 +51,28 @@
                                     <action selector="changeCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zPO-oE-IJg"/>
                                 </connections>
                             </button>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="LFg-h5-kaj">
+                                <rect key="frame" x="18" y="720" width="378" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </slider>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Hxh-24-KwQ">
+                                <rect key="frame" x="18" y="643" width="378" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Reflectivity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ABt-5q-wvH">
+                                <rect key="frame" x="20" y="680" width="146" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <color key="textColor" systemColor="systemOrangeColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Transparency" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="01g-aW-DFM">
+                                <rect key="frame" x="20" y="603" width="151" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <color key="textColor" systemColor="systemOrangeColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -60,7 +82,13 @@
                         <outlet property="cameraUnavailableLabel" destination="oEy-Sm-l2L" id="mfO-nt-poL"/>
                         <outlet property="photoButton" destination="MsC-Qh-QrI" id="jGG-0D-GGm"/>
                         <outlet property="previewView" destination="aBv-5c-jfI" id="Zw6-0F-yhU"/>
+                        <outlet property="reflectivitySlider" destination="LFg-h5-kaj" id="ofV-gr-IJo"/>
                         <outlet property="resumeButton" destination="Jew-sj-bQL" id="0lo-XG-2UO"/>
+                        <outlet property="transparencySlider" destination="Hxh-24-KwQ" id="xti-bF-qyb"/>
+                        <outletCollection property="renderingViews" destination="ABt-5q-wvH" collectionClass="NSMutableArray" id="1Hu-xd-KNb"/>
+                        <outletCollection property="renderingViews" destination="LFg-h5-kaj" collectionClass="NSMutableArray" id="jjy-bL-bt4"/>
+                        <outletCollection property="renderingViews" destination="Hxh-24-KwQ" collectionClass="NSMutableArray" id="0Tv-eg-pET"/>
+                        <outletCollection property="renderingViews" destination="01g-aW-DFM" collectionClass="NSMutableArray" id="40U-8Q-WEo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
