@@ -105,10 +105,11 @@ class KaleidoscopeRenderer: FilterRenderer {
             return nil
         }
 
-        var mirrors: [LineSegment] = []
+        var mirrorCoords: [Float] = []
         for i in 0..<unwrappedMirrorCorners.count {
-            mirrors.append(MakeLineSegment(p0: unwrappedMirrorCorners[i],
-                                           p1: unwrappedMirrorCorners[(i + 1) % unwrappedMirrorCorners.count]))
+            let segement = MakeLineSegment(p0: unwrappedMirrorCorners[i],
+                                           p1: unwrappedMirrorCorners[(i + 1) % unwrappedMirrorCorners.count])
+            mirrorCoords += ConvertLineSegmentToFloats(segment: segement)
         }
 
         guard var unwrappedFilterParams = filterParams else {
@@ -129,8 +130,8 @@ class KaleidoscopeRenderer: FilterRenderer {
         commandEncoder.setBytes(&unwrappedFilterParams,
                                 length: MemoryLayout<KaleidoscopeFilterParams>.stride,
                                 index: 0)
-        commandEncoder.setBytes(mirrors,
-                                length: MemoryLayout<LineSegment>.stride * mirrors.count,
+        commandEncoder.setBytes(mirrorCoords,
+                                length: MemoryLayout<Float>.stride * mirrorCoords.count,
                                 index: 1)
 
         // Set up the thread groups.
