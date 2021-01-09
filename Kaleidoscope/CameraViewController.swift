@@ -70,6 +70,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // On screen dots, marking the positions of mirror corners
     private var dotViews: [UIImageView] = []
 
+    @IBOutlet private var dotView: UIView!
+
     // The current dot being dragged by the PanGesture
     private var draggingDot: UIView?
 
@@ -158,7 +160,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             let imageView = UIImageView(image: image!)
             imageView.frame = CGRect(x: coords[0], y: coords[1],
                                      width: dotSize, height: dotSize)
-            view.addSubview(imageView)
+            dotView.addSubview(imageView)
             dotViews.append(imageView)
         }
 
@@ -588,9 +590,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         if let unwrappedNextDotAlpha = newDotAlpha {
             UIView.animate(withDuration: 0.25, animations: {
-                for dot in self.dotViews {
-                    dot.alpha = unwrappedNextDotAlpha
-                }
+                self.dotView.alpha = unwrappedNextDotAlpha
             })
         }
 
@@ -609,10 +609,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 return
             }
             var distances: [Float] = []
-            for dotView in dotViews {
-                var pos = gesture.location(in: dotView)
-                pos.x -= dotView.frame.width / 2;
-                pos.y -= dotView.frame.height / 2;
+            for dot in dotViews {
+                var pos = gesture.location(in: dot)
+                pos.x -= dot.frame.width / 2;
+                pos.y -= dot.frame.height / 2;
                 let dist = sqrt(pos.x * pos.x + pos.y * pos.y)
                 distances.append(Float(dist))
             }
