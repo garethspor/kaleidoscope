@@ -24,8 +24,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var brightnessSlider : UISlider!
     @IBOutlet weak private var transparencySlider : UISlider!
-    @IBOutlet private var renderingViews: [UIView]!
 
+    @IBOutlet weak private var renderingControlView : UIView!
+    
     private var kaleidoscopeFilterParams = KaleidoscopeFilterParams(numSegments: 3, mirrored: false, brightness: 0.8, transparency: 0.2, maxReflections: 64)
 
     private enum SessionSetupResult {
@@ -161,10 +162,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             dotViews.append(imageView)
         }
 
-        for view in renderingViews {
-            view.alpha = 0.0
-        }
-
+        renderingControlView.alpha = 0.0
         brightnessSlider.value = kaleidoscopeFilterParams.brightness
         transparencySlider.value = kaleidoscopeFilterParams.transparency
 
@@ -598,9 +596,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         if let unwrappedNewRenderingViewAlpha = newRenderingViewAlpha {
             UIView.animate(withDuration: 0.25, animations: {
-                for view in self.renderingViews {
-                    view.alpha = unwrappedNewRenderingViewAlpha
-                }
+                self.renderingControlView.alpha = unwrappedNewRenderingViewAlpha
             })
         }
     }
