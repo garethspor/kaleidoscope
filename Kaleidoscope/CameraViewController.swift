@@ -71,8 +71,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         mediaType: .video,
         position: .unspecified)
 
-    private var statusBarOrientation: UIInterfaceOrientation = .portrait
-
     // On screen dots, marking the positions of mirror corners
     private var dotViews: [UIImageView] = []
 
@@ -187,7 +185,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         guard let interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
             fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
         }
-        statusBarOrientation = interfaceOrientation
 
         let initialThermalState = ProcessInfo.processInfo.thermalState
         if initialThermalState == .serious || initialThermalState == .critical {
@@ -199,27 +196,14 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             case .success:
                 self.addObservers()
 
-                if let photoOrientation = AVCaptureVideoOrientation(interfaceOrientation: interfaceOrientation) {
-                    if let unwrappedPhotoOutputConnection = self.photoOutput.connection(with: .video) {
-                        unwrappedPhotoOutputConnection.videoOrientation = photoOrientation
-                    }
+                if let unwrappedPhotoOutputConnection = self.photoOutput.connection(with: .video) {
+                    unwrappedPhotoOutputConnection.videoOrientation = .portrait
                 }
-
-                if let unwrappedVideoDataOutputConnection = self.videoDataOutput.connection(with: .video) {
-                    let videoDevicePosition = self.videoInput.device.position
-                    let rotation = PreviewMetalView.Rotation(
-                        with: interfaceOrientation,
-                        videoOrientation: unwrappedVideoDataOutputConnection.videoOrientation,
-                        cameraPosition: videoDevicePosition)
-                    self.previewView.mirroring = (videoDevicePosition == .front)
-                    if let rotation = rotation {
-                        self.previewView.rotation = rotation
-                    }
-                }
+                self.previewView.mirroring = (self.videoInput.device.position == .front)
+                self.previewView.rotation = .rotate90Degrees
                 self.dataOutputQueue.async {
                     self.renderingEnabled = true
                 }
-
                 self.session.startRunning()
                 self.isSessionRunning = self.session.isRunning
 
@@ -669,8 +653,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             self.photoFilter.reset()
         }
 
-        let interfaceOrientation = statusBarOrientation
-
         sessionQueue.async {
             let currentVideoDevice = self.videoInput.device
             var preferredPosition = AVCaptureDevice.Position.unspecified
@@ -722,18 +704,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 self.updateImageRect(videoDevice)
             }
 
-            let videoPosition = self.videoInput.device.position
-
-            if let unwrappedVideoDataOutputConnection = self.videoDataOutput.connection(with: .video) {
-                let rotation = PreviewMetalView.Rotation(with: interfaceOrientation,
-                                                         videoOrientation: unwrappedVideoDataOutputConnection.videoOrientation,
-                                                         cameraPosition: videoPosition)
-
-                self.previewView.mirroring = (videoPosition == .front)
-                if let rotation = rotation {
-                    self.previewView.rotation = rotation
-                }
-            }
+            self.previewView.mirroring = (self.videoInput.device.position == .front)
 
             self.dataOutputQueue.async {
                 self.renderingEnabled = true
@@ -982,128 +953,5 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
         print("Finalizing CGImageDestination error!")
         return nil
-    }
-}
-
-extension AVCaptureVideoOrientation {
-    init?(interfaceOrientation: UIInterfaceOrientation) {
-        switch interfaceOrientation {
-        case .portrait: self = .portrait
-        case .portraitUpsideDown: self = .portraitUpsideDown
-        case .landscapeLeft: self = .landscapeLeft
-        case .landscapeRight: self = .landscapeRight
-        default: return nil
-        }
-    }
-}
-
-extension PreviewMetalView.Rotation {
-    init?(with interfaceOrientation: UIInterfaceOrientation, videoOrientation: AVCaptureVideoOrientation, cameraPosition: AVCaptureDevice.Position) {
-        /*
-         Calculate the rotation between the videoOrientation and the interfaceOrientation.
-         The direction of the rotation depends upon the camera position.
-         */
-        switch videoOrientation {
-        case .portrait:
-            switch interfaceOrientation {
-            case .landscapeRight:
-                if cameraPosition == .front {
-                    self = .rotate90Degrees
-                } else {
-                    self = .rotate270Degrees
-                }
-
-            case .landscapeLeft:
-                if cameraPosition == .front {
-                    self = .rotate270Degrees
-                } else {
-                    self = .rotate90Degrees
-                }
-
-            case .portrait:
-                self = .rotate0Degrees
-
-            case .portraitUpsideDown:
-                self = .rotate180Degrees
-
-            default: return nil
-            }
-        case .portraitUpsideDown:
-            switch interfaceOrientation {
-            case .landscapeRight:
-                if cameraPosition == .front {
-                    self = .rotate270Degrees
-                } else {
-                    self = .rotate90Degrees
-                }
-
-            case .landscapeLeft:
-                if cameraPosition == .front {
-                    self = .rotate90Degrees
-                } else {
-                    self = .rotate270Degrees
-                }
-
-            case .portrait:
-                self = .rotate180Degrees
-
-            case .portraitUpsideDown:
-                self = .rotate0Degrees
-
-            default: return nil
-            }
-
-        case .landscapeRight:
-            switch interfaceOrientation {
-            case .landscapeRight:
-                self = .rotate0Degrees
-
-            case .landscapeLeft:
-                self = .rotate180Degrees
-
-            case .portrait:
-                if cameraPosition == .front {
-                    self = .rotate270Degrees
-                } else {
-                    self = .rotate90Degrees
-                }
-
-            case .portraitUpsideDown:
-                if cameraPosition == .front {
-                    self = .rotate90Degrees
-                } else {
-                    self = .rotate270Degrees
-                }
-
-            default: return nil
-            }
-
-        case .landscapeLeft:
-            switch interfaceOrientation {
-            case .landscapeLeft:
-                self = .rotate0Degrees
-
-            case .landscapeRight:
-                self = .rotate180Degrees
-
-            case .portrait:
-                if cameraPosition == .front {
-                    self = .rotate90Degrees
-                } else {
-                    self = .rotate270Degrees
-                }
-
-            case .portraitUpsideDown:
-                if cameraPosition == .front {
-                    self = .rotate270Degrees
-                } else {
-                    self = .rotate90Degrees
-                }
-
-            default: return nil
-            }
-        @unknown default:
-            fatalError("Unknown orientation.")
-        }
     }
 }
