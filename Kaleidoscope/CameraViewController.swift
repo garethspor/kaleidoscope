@@ -22,12 +22,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var previewView: PreviewMetalView!
 
+    @IBOutlet weak private var renderingControlView : UIView!
+
     @IBOutlet weak private var brightnessSlider : UISlider!
+
     @IBOutlet weak private var transparencySlider : UISlider!
 
-    @IBOutlet weak private var renderingControlView : UIView!
-    
-    private var kaleidoscopeFilterParams = KaleidoscopeFilterParams(numSegments: 3, mirrored: false, brightness: 0.8, transparency: 0.2, maxReflections: 64)
+    private var kaleidoscopeFilterParams = KaleidoscopeFilterParams(
+        numSegments: 3,
+        mirrored: false,
+        brightness: 0.8,
+        transparency: 0.2,
+        maxReflections: 64)
 
     private enum SessionSetupResult {
         case success
@@ -70,6 +76,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // On screen dots, marking the positions of mirror corners
     private var dotViews: [UIImageView] = []
 
+    // View to hold all dotViews
     @IBOutlet private var dotView: UIView!
 
     // The current dot being dragged by the PanGesture
@@ -93,9 +100,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         case controlsHidden
     }
 
-    private var panGesture: UIPanGestureRecognizer?
-
     private var uiControlMode: UiControlMode = .draggableDots
+
+    private var panGesture: UIPanGestureRecognizer?
 
     // MARK: - View Controller Life Cycle
 
@@ -151,11 +158,10 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             self.configureSession()
         }
 
-        let imageName = "dot.png"
-        let image = UIImage(named: imageName)
+        let image = UIImage(named: "dot.png")
         let initialDotCoords = [[299, 302], [197, 200], [197, 443]]
 
-        let dotSize = 20
+        let dotSize = 24
         for coords in initialDotCoords {
             let imageView = UIImageView(image: image!)
             imageView.frame = CGRect(x: coords[0], y: coords[1],
@@ -361,11 +367,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                                                selector: #selector(sessionInterruptionEnded),
                                                name: NSNotification.Name.AVCaptureSessionInterruptionEnded,
                                                object: session)
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(subjectAreaDidChange),
-                                               name: NSNotification.Name.AVCaptureDeviceSubjectAreaDidChange,
-                                               object: videoInput.device)
     }
 
     private func removeObservers() {
@@ -568,37 +569,19 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // MARK: - IBAction Functions
 
     @IBAction private func cycleUiControlMode(_ gesture: UITapGestureRecognizer) {
-        var newDotAlpha: CGFloat?
-        var newRenderingViewAlpha: CGFloat?
-
         switch uiControlMode {
         case .draggableDots:
             uiControlMode = .renderingSliders
-            newDotAlpha = 0.0
-            newRenderingViewAlpha = 1.0
-            panGesture!.isEnabled = false
-
         case .renderingSliders:
             uiControlMode = .controlsHidden
-            newRenderingViewAlpha = 0.0
-
         case .controlsHidden:
             uiControlMode = .draggableDots
-            newDotAlpha = 1.0
-            panGesture!.isEnabled = true
         }
 
-        if let unwrappedNextDotAlpha = newDotAlpha {
-            UIView.animate(withDuration: 0.25, animations: {
-                self.dotView.alpha = unwrappedNextDotAlpha
-            })
-        }
-
-        if let unwrappedNewRenderingViewAlpha = newRenderingViewAlpha {
-            UIView.animate(withDuration: 0.25, animations: {
-                self.renderingControlView.alpha = unwrappedNewRenderingViewAlpha
-            })
-        }
+        UIView.animate(withDuration: 0.25, animations: {
+            self.dotView.alpha = self.uiControlMode == .draggableDots ? 1.0 : 0.0
+            self.renderingControlView.alpha = self.uiControlMode == .renderingSliders ? 1.0 : 0.0
+        })
     }
 
     @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
@@ -664,23 +647,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
     }
 
-//    @IBAction private func focusAndExposeTap(_ gesture: UITapGestureRecognizer) {
-//        let location = gesture.location(in: previewView)
-//        guard let texturePoint = previewView.texturePointForView(point: location) else {
-//            return
-//        }
-//
-//        let textureRect = CGRect(origin: texturePoint, size: .zero)
-//        let deviceRect = videoDataOutput.metadataOutputRectConverted(fromOutputRect: textureRect)
-//        focus(with: .autoFocus, exposureMode: .autoExpose, at: deviceRect.origin, monitorSubjectAreaChange: true)
-//    }
-
-    @objc
-    func subjectAreaDidChange(notification: NSNotification) {
-//        let devicePoint = CGPoint(x: 0.5, y: 0.5)
-//        focus(with: .continuousAutoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
-    }
-
     @IBAction private func changeBrightnessSlider(_ sender: UISlider) {
         kaleidoscopeFilterParams.brightness = sender.value
     }
@@ -739,10 +705,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                     NotificationCenter.default.removeObserver(self,
                                                               name: NSNotification.Name.AVCaptureDeviceSubjectAreaDidChange,
                                                               object: currentVideoDevice)
-                    NotificationCenter.default.addObserver(self,
-                                                           selector: #selector(self.subjectAreaDidChange),
-                                                           name: NSNotification.Name.AVCaptureDeviceSubjectAreaDidChange,
-                                                           object: videoDevice)
 
                     self.session.addInput(videoInput)
                     self.videoInput = videoInput
@@ -786,8 +748,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBAction private func capturePhoto(_ photoButton: UIButton) {
         sessionQueue.async {
-            let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])  // TODO(spor) play with this too
-
+            let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
             self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
         }
     }
@@ -839,7 +800,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         for dot in dotViews {
             // TODO: fix this in case view is wider than image, currently broken
             var point = CGPoint(x: CGFloat(dot.frame.origin.x), y: CGFloat(dot.frame.origin.y))
-            point.x += dot.frame.width / 2
+            point.x += dot.frame.width / 2 - videoRect.origin.x + 1  // Unclear why, but this +1 results in much better dot-corner alignment
             point.y += dot.frame.height / 2 - videoRect.origin.y
 
             let corner = CGPoint(x: CGFloat(point.y / videoRect.size.height),
@@ -971,32 +932,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             }
         }
     }
-
-    // TODO(spor): enable this later?
-//    private func focus(with focusMode: AVCaptureDevice.FocusMode, exposureMode: AVCaptureDevice.ExposureMode, at devicePoint: CGPoint, monitorSubjectAreaChange: Bool) {
-//
-//        sessionQueue.async {
-//            let videoDevice = self.videoInput.device
-//
-//            do {
-//                try videoDevice.lockForConfiguration()
-//                if videoDevice.isFocusPointOfInterestSupported && videoDevice.isFocusModeSupported(focusMode) {
-//                    videoDevice.focusPointOfInterest = devicePoint
-//                    videoDevice.focusMode = focusMode
-//                }
-//
-//                if videoDevice.isExposurePointOfInterestSupported && videoDevice.isExposureModeSupported(exposureMode) {
-//                    videoDevice.exposurePointOfInterest = devicePoint
-//                    videoDevice.exposureMode = exposureMode
-//                }
-//
-//                videoDevice.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
-//                videoDevice.unlockForConfiguration()
-//            } catch {
-//                print("Could not lock device for configuration: \(error)")
-//            }
-//        }
-//    }
 
     func alert(title: String, message: String, actions: [UIAlertAction]) {
         let alertController = UIAlertController(title: title,
