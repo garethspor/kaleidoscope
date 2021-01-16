@@ -771,7 +771,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         for dot in dotViews {
             // TODO: fix this in case view is wider than image, currently broken
             var point = CGPoint(x: CGFloat(dot.frame.origin.x), y: CGFloat(dot.frame.origin.y))
-            point.x += dot.frame.width / 2 - videoRect.origin.x + 1  // Unclear why, but this +1 results in much better dot-corner alignment
+            point.x += dot.frame.width / 2 - videoRect.origin.x
             point.y += dot.frame.height / 2 - videoRect.origin.y
 
             let corner = CGPoint(x: CGFloat(point.y / videoRect.size.height),
