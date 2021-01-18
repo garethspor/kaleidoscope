@@ -99,21 +99,17 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="11" translatesAutoresizingMaskIntoConstraints="NO" id="cqm-nN-Hpk" userLabel="Sliders Stack View">
                                                 <rect key="frame" x="178" y="0.0" width="200" height="68"/>
                                                 <subviews>
-                                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="LFg-h5-kaj">
-                                                        <rect key="frame" x="-2" y="0.0" width="204" height="28"/>
+                                                    <slider opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="LFg-h5-kaj">
+                                                        <rect key="frame" x="-2" y="0.0" width="204" height="31"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="30" id="VFB-3o-C9D"/>
                                                             <constraint firstAttribute="width" constant="200" id="Xk1-mc-o0R"/>
                                                         </constraints>
                                                         <connections>
                                                             <action selector="changeBrightnessSlider:" destination="BYZ-38-t0r" eventType="valueChanged" id="GaS-IL-1wj"/>
                                                         </connections>
                                                     </slider>
-                                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Hxh-24-KwQ">
-                                                        <rect key="frame" x="-2" y="38" width="204" height="31"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="30" id="3Sv-Hg-xxN"/>
-                                                        </constraints>
+                                                    <slider opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Hxh-24-KwQ">
+                                                        <rect key="frame" x="-2" y="41" width="204" height="28"/>
                                                         <connections>
                                                             <action selector="changeTransparencySlider:" destination="BYZ-38-t0r" eventType="valueChanged" id="zeu-bK-pB4"/>
                                                         </connections>
