@@ -182,10 +182,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         // Prevent the device from sleeping.
         UIApplication.shared.isIdleTimerDisabled = true
 
-        guard let interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
-            fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
-        }
-
         let initialThermalState = ProcessInfo.processInfo.thermalState
         if initialThermalState == .serious || initialThermalState == .critical {
             showThermalState(state: initialThermalState)
