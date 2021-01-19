@@ -102,6 +102,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var panGesture: UIPanGestureRecognizer?
 
+    private var longPressPhotoGesture: UILongPressGestureRecognizer?
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -118,6 +120,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
         previewView.addGestureRecognizer(panGesture!)
+
+        longPressPhotoGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressPhotoButton))
+        photoButton.addGestureRecognizer(longPressPhotoGesture!)
 
         // Check video authorization status, video access is required
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -562,6 +567,16 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             self.dotView.alpha = self.uiControlMode == .draggableDots ? 1.0 : 0.0
             self.renderingControlView.alpha = self.uiControlMode == .renderingSliders ? 1.0 : 0.0
         })
+    }
+
+    @IBAction private func longPressPhotoButton(_ gesture: UILongPressGestureRecognizer) {
+        switch (gesture.state) {
+        case .began:
+            photoButton.tintColor = .systemRed
+        case .ended:
+            photoButton.tintColor = .systemOrange
+        default: break
+        }
     }
 
     @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
