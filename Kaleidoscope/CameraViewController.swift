@@ -104,8 +104,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var longPressPhotoGesture: UILongPressGestureRecognizer?
 
-    private var processedSize: CGSize?
-
     private var clipRecorder: ClipRecorder?
 
     // MARK: - View Controller Life Cycle
@@ -593,12 +591,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private func startRecordingClip() -> Bool {
         print ("start recording clip")
-        guard let unwrappedProcessedSize = processedSize else {
-            print("Processed size unknown")
-            return false
-        }
-
-        clipRecorder = ClipRecorder(withSize: unwrappedProcessedSize)
+        clipRecorder = ClipRecorder()
         return clipRecorder != nil
     }
 
@@ -871,8 +864,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         finalVideoPixelBuffer = filteredBuffer
 
         previewView.pixelBuffer = finalVideoPixelBuffer
-
-        processedSize = CGSize(width: CVPixelBufferGetWidth(finalVideoPixelBuffer), height: CVPixelBufferGetHeight(finalVideoPixelBuffer))
 
         if let unwrappedClipRecorder = clipRecorder {
             unwrappedClipRecorder.appendBuffer(finalVideoPixelBuffer, withTimestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))

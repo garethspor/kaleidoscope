@@ -16,34 +16,19 @@ class ClipRecorder {
 
     private let videoWriter: AVAssetWriter
 
-    private let videoWriterInput: AVAssetWriterInput
+    private var videoWriterInput: AVAssetWriterInput?
 
-    private let pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor
+    private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
 
     private var firstClipTimeValue: CMTimeValue?
 
     private var stopped = false
 
-    required init?(withSize processedSize: CGSize) {
+    required init?() {
         let outputFileName = NSUUID().uuidString
         self.outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
         do {
             self.videoWriter = try AVAssetWriter(outputURL: URL(fileURLWithPath: outputFilePath), fileType: AVFileType.mov)
-            let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
-                                                AVVideoWidthKey: Int(processedSize.width),
-                                                AVVideoHeightKey: Int(processedSize.height)]
-            self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
-            self.pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput, sourcePixelBufferAttributes: nil)
-            if !videoWriter.canAdd(videoWriterInput) {
-                print("can't add video writer")
-                return nil
-            }
-            videoWriterInput.expectsMediaDataInRealTime = true
-            videoWriter.add(videoWriterInput)
-            videoWriter.startWriting()
-            let startFrameTime = CMTimeMake(value: 0, timescale: 600)
-            videoWriter.startSession(atSourceTime: startFrameTime)
-            print("started session at \(startFrameTime)")
         } catch {
             print("Error: \(error)")
             return nil
@@ -51,12 +36,30 @@ class ClipRecorder {
     }
 
     func appendBuffer(_ buffer: CVImageBuffer, withTimestamp timestamp: CMTime) {
-        if pixelBufferAdaptor.assetWriterInput.isReadyForMoreMediaData {
-            if firstClipTimeValue == nil {
-                firstClipTimeValue = timestamp.value
+        if (stopped) { return }
+
+        if firstClipTimeValue == nil {
+            firstClipTimeValue = timestamp.value
+            let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
+                                                AVVideoWidthKey: Int(CVPixelBufferGetWidth(buffer)),
+                                                AVVideoHeightKey: Int(CVPixelBufferGetHeight(buffer))]
+            self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
+            self.pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput!, sourcePixelBufferAttributes: nil)
+            if !videoWriter.canAdd(videoWriterInput!) {
+                print("can't add video writer")
+                return
             }
+            videoWriterInput!.expectsMediaDataInRealTime = true
+            videoWriter.add(videoWriterInput!)
+            videoWriter.startWriting()
+            let startFrameTime = CMTimeMake(value: 0, timescale: 600)
+            videoWriter.startSession(atSourceTime: startFrameTime)
+            print("started session at \(startFrameTime)")
+        }
+
+        if pixelBufferAdaptor!.assetWriterInput.isReadyForMoreMediaData {
             let videoTime = CMTime(value: timestamp.value - firstClipTimeValue!, timescale: timestamp.timescale)
-            pixelBufferAdaptor.append(buffer, withPresentationTime: videoTime)
+            pixelBufferAdaptor!.append(buffer, withPresentationTime: videoTime)
         } else {
             print("adaptor not ready")
         }
@@ -64,7 +67,12 @@ class ClipRecorder {
     
     func stopRecording() {
         stopped = true
-        videoWriterInput.markAsFinished()
+
+        guard let unwrappedVideoWriterInput = videoWriterInput else {
+            return
+        }
+
+        unwrappedVideoWriterInput.markAsFinished()
         videoWriter.finishWriting {
             print(self.videoWriter.error ?? "finished writing ok I think!")
         }
