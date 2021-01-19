@@ -106,6 +106,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var clipRecorder: ClipRecorder?
 
+    @IBOutlet weak var recordingClipLabel: UILabel!
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -114,8 +116,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         // Disable UI. The UI is enabled if and only if the session starts running.
         cameraButton.isEnabled = false
         photoButton.isEnabled = false
-        cameraUnavailableLabel.isHidden = true;
-        resumeButton.isHidden = true;
+        cameraUnavailableLabel.isHidden = true
+        resumeButton.isHidden = true
+        recordingClipLabel.alpha = 0.0
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cycleUiControlMode))
         previewView.addGestureRecognizer(tapGesture)
@@ -578,20 +581,23 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
 
     private func startRecordingClip() {
-        print ("start recording clip")
+        recordingClipLabel.text = "Starting Recording Clip"
+        recordingClipLabel.alpha = 1.0
         photoButton.tintColor = .systemRed
         clipRecorder = ClipRecorder()
     }
 
     private func stopRecordingClip() {
-        print("stop recording clip")
         photoButton.tintColor = .systemOrange
         guard let unwrappedClipRecorder = clipRecorder else {
-            print("no recording")
             return
         }
 
         unwrappedClipRecorder.stopRecording()
+        recordingClipLabel.text = unwrappedClipRecorder.statusString()
+        UIView.animate(withDuration: 2.0) {
+            self.recordingClipLabel.alpha = 0.0
+        }
         clipRecorder = nil
     }
 
@@ -861,7 +867,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         if let unwrappedClipRecorder = clipRecorder {
             unwrappedClipRecorder.appendBuffer(finalVideoPixelBuffer, withTimestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
-            print("bufferCount: \(unwrappedClipRecorder.bufferCount) recordDuration: \(CMTimeGetSeconds(unwrappedClipRecorder.recordDuration))")
+            DispatchQueue.main.async {
+                self.recordingClipLabel.text = unwrappedClipRecorder.statusString()
+            }
         }
     }
 

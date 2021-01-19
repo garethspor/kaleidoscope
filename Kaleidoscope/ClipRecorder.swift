@@ -121,4 +121,15 @@ class ClipRecorder {
         }
     }
 
+    func statusString() -> String {
+        if internalBufferCount == 0 {
+            return "Recording Clip - Starting"
+        }
+        var status = String(format: "Recording Clip - %.2f", CMTimeGetSeconds(internalRecordDuration))
+        if stopped {
+            status += " - Done"
+        }
+        return status
+    }
+
 }
