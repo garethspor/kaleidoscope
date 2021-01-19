@@ -867,6 +867,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         if let unwrappedClipRecorder = clipRecorder {
             unwrappedClipRecorder.appendBuffer(finalVideoPixelBuffer, withTimestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+            print("bufferCount: \(unwrappedClipRecorder.bufferCount) recordDuration: \(CMTimeGetSeconds(unwrappedClipRecorder.recordDuration))")
         }
     }
 

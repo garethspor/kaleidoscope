@@ -24,6 +24,18 @@ class ClipRecorder {
 
     private var stopped = false
 
+    private var internalBufferCount = 0
+
+    var bufferCount : Int {
+        return internalBufferCount
+    }
+
+    private var internalRecordDuration = CMTime(value: 0, timescale: 1)
+
+    var recordDuration : CMTime {
+        return internalRecordDuration
+    }
+
     required init?() {
         let outputFileName = NSUUID().uuidString
         self.outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
@@ -58,8 +70,9 @@ class ClipRecorder {
         }
 
         if pixelBufferAdaptor!.assetWriterInput.isReadyForMoreMediaData {
-            let videoTime = CMTime(value: timestamp.value - firstClipTimeValue!, timescale: timestamp.timescale)
-            pixelBufferAdaptor!.append(buffer, withPresentationTime: videoTime)
+            internalRecordDuration = CMTime(value: timestamp.value - firstClipTimeValue!, timescale: timestamp.timescale)
+            pixelBufferAdaptor!.append(buffer, withPresentationTime: internalRecordDuration)
+            internalBufferCount += 1
         } else {
             print("adaptor not ready")
         }
