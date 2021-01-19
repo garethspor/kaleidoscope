@@ -104,6 +104,16 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var longPressPhotoGesture: UILongPressGestureRecognizer?
 
+    private var videoWriter: AVAssetWriter?
+
+    private var videoWriterInput: AVAssetWriterInput?
+
+    private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
+
+    private var processedSize: CGSize?
+
+    private var outputFilePath: String?
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -572,10 +582,101 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     @IBAction private func longPressPhotoButton(_ gesture: UILongPressGestureRecognizer) {
         switch (gesture.state) {
         case .began:
-            photoButton.tintColor = .systemRed
-        case .ended:
+            let success = startRecordingClip()
+            if success {
+                photoButton.tintColor = .systemRed
+            } else {
+                gesture.state = .cancelled
+            }
+
+        case .cancelled, .ended:
             photoButton.tintColor = .systemOrange
+            stopRecordingClip()
+
         default: break
+        }
+    }
+
+    private func startRecordingClip() -> Bool {
+        print ("start recording clip")
+
+        guard let unwrappedProcessedSize = processedSize else {
+            print("Processed size unknown")
+            return false
+        }
+
+        // Start recording video to a temporary file.
+        let outputFileName = NSUUID().uuidString
+        outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
+        do {
+            videoWriter = try AVAssetWriter(outputURL: URL(fileURLWithPath: outputFilePath!), fileType: AVFileType.mov)
+            let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
+                                                AVVideoWidthKey: Int(unwrappedProcessedSize.width),
+                                                AVVideoHeightKey: Int(unwrappedProcessedSize.height)]
+            videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
+            pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput!, sourcePixelBufferAttributes: nil)
+            if !videoWriter!.canAdd(videoWriterInput!) {
+                print("can't add video writer")
+                return false
+            }
+            videoWriterInput!.expectsMediaDataInRealTime = true
+            videoWriter!.add(videoWriterInput!)
+            videoWriter!.startWriting()
+            let startFrameTime = CMTimeMake(value: 0, timescale: 600)
+            videoWriter!.startSession(atSourceTime: startFrameTime)
+        } catch {
+            print("Error: \(error)")
+            return false
+        }
+        return true
+    }
+
+    private func stopRecordingClip() {
+        print("stop recording clip")
+        guard let unwrappedVideoWriter = videoWriter,
+              let unwrappedVideoWriterInput = videoWriterInput,
+              let unwrappedOutputFilePath = outputFilePath else {
+            print("no recording")
+            return
+        }
+
+        unwrappedVideoWriterInput.markAsFinished()
+        unwrappedVideoWriter.finishWriting {
+            print(unwrappedVideoWriter.error ?? "finished writing ok I think!")
+        }
+
+        videoWriterInput = nil
+        videoWriter = nil
+        pixelBufferAdaptor = nil
+
+        func cleanup() {
+            if FileManager.default.fileExists(atPath: unwrappedOutputFilePath) {
+                do {
+                    try FileManager.default.removeItem(atPath: unwrappedOutputFilePath)
+                } catch {
+                    print("Could not remove file at url: \(unwrappedOutputFilePath)")
+                }
+            }
+        }
+
+        PHPhotoLibrary.requestAuthorization { status in
+            if status == .authorized {
+                // Save the movie file to the photo library and cleanup.
+                PHPhotoLibrary.shared().performChanges({
+                    let options = PHAssetResourceCreationOptions()
+                    options.shouldMoveFile = true
+                    let creationRequest = PHAssetCreationRequest.forAsset()
+                    creationRequest.addResource(with: .video, fileURL: URL(fileURLWithPath: unwrappedOutputFilePath), options: options)
+                }, completionHandler: { success, error in
+                    if !success {
+                        print("AVCam couldn't save the movie to your photo library: \(String(describing: error))")
+                    }
+                    cleanup()
+                }
+                )
+            } else {
+                cleanup()
+            }
         }
     }
 
@@ -807,6 +908,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         renderer.mirrorCorners = unwrappedMirrorCorners
     }
 
+    // TODO: pass in some sort of real time stamp for these frames
+    var tempCounter: Int = 0
+
     func processVideo(sampleBuffer: CMSampleBuffer) {
         if !renderingEnabled {
             return
@@ -837,6 +941,21 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         finalVideoPixelBuffer = filteredBuffer
 
         previewView.pixelBuffer = finalVideoPixelBuffer
+
+        processedSize = CGSize(width: CVPixelBufferGetWidth(finalVideoPixelBuffer), height: CVPixelBufferGetHeight(finalVideoPixelBuffer))
+
+        guard let unwrappedPixelBufferAdaptor = pixelBufferAdaptor else {
+            // no clip being recorded
+            return
+        }
+
+        if unwrappedPixelBufferAdaptor.assetWriterInput.isReadyForMoreMediaData {
+            print("ready")
+            unwrappedPixelBufferAdaptor.append(finalVideoPixelBuffer, withPresentationTime: CMTime(value: CMTimeValue(tempCounter), timescale: 600))
+            tempCounter += 30
+        } else {
+            print("not ready")
+        }
     }
 
     // MARK: - Photo Output Delegate
