@@ -572,31 +572,20 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
 
     @IBAction private func longPressPhotoButton(_ gesture: UILongPressGestureRecognizer) {
-        switch (gesture.state) {
-        case .began:
-            let success = startRecordingClip()
-            if success {
-                photoButton.tintColor = .systemRed
-            } else {
-                gesture.state = .cancelled
-            }
-
-        case .cancelled, .ended:
-            photoButton.tintColor = .systemOrange
-            stopRecordingClip()
-
-        default: break
+        if gesture.state == .began {
+            startRecordingClip()
         }
     }
 
-    private func startRecordingClip() -> Bool {
+    private func startRecordingClip() {
         print ("start recording clip")
+        photoButton.tintColor = .systemRed
         clipRecorder = ClipRecorder()
-        return clipRecorder != nil
     }
 
     private func stopRecordingClip() {
         print("stop recording clip")
+        photoButton.tintColor = .systemOrange
         guard let unwrappedClipRecorder = clipRecorder else {
             print("no recording")
             return
@@ -756,6 +745,11 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
 
     @IBAction private func capturePhoto(_ photoButton: UIButton) {
+        if clipRecorder != nil {
+            stopRecordingClip()
+            return
+        }
+
         sessionQueue.async {
             let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
             self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
