@@ -114,6 +114,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var outputFilePath: String?
 
+    private var firstClipTimeValue: CMTimeValue?
+
     // MARK: - View Controller Life Cycle
 
     override func viewDidLoad() {
@@ -624,6 +626,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             videoWriter!.startWriting()
             let startFrameTime = CMTimeMake(value: 0, timescale: 600)
             videoWriter!.startSession(atSourceTime: startFrameTime)
+            print("started session at \(startFrameTime)")
         } catch {
             print("Error: \(error)")
             return false
@@ -648,6 +651,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         videoWriterInput = nil
         videoWriter = nil
         pixelBufferAdaptor = nil
+        firstClipTimeValue = nil
 
         func cleanup() {
             if FileManager.default.fileExists(atPath: unwrappedOutputFilePath) {
@@ -908,9 +912,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         renderer.mirrorCorners = unwrappedMirrorCorners
     }
 
-    // TODO: pass in some sort of real time stamp for these frames
-    var tempCounter: Int = 0
-
     func processVideo(sampleBuffer: CMSampleBuffer) {
         if !renderingEnabled {
             return
@@ -950,11 +951,14 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
 
         if unwrappedPixelBufferAdaptor.assetWriterInput.isReadyForMoreMediaData {
-            print("ready")
-            unwrappedPixelBufferAdaptor.append(finalVideoPixelBuffer, withPresentationTime: CMTime(value: CMTimeValue(tempCounter), timescale: 600))
-            tempCounter += 30
+            let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            if firstClipTimeValue == nil {
+                firstClipTimeValue = timestamp.value
+            }
+            let videoTime = CMTime(value: timestamp.value - firstClipTimeValue!, timescale: timestamp.timescale)
+            unwrappedPixelBufferAdaptor.append(finalVideoPixelBuffer, withPresentationTime: videoTime)
         } else {
-            print("not ready")
+            print("adaptor not ready")
         }
     }
 
