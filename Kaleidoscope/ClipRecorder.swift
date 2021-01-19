@@ -56,6 +56,7 @@ class ClipRecorder {
                                                 AVVideoWidthKey: Int(CVPixelBufferGetWidth(buffer)),
                                                 AVVideoHeightKey: Int(CVPixelBufferGetHeight(buffer))]
             self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
+            self.videoWriterInput?.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
             self.pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput!, sourcePixelBufferAttributes: nil)
             if !videoWriter.canAdd(videoWriterInput!) {
                 print("can't add video writer")
