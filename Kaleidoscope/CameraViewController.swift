@@ -104,17 +104,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var longPressPhotoGesture: UILongPressGestureRecognizer?
 
-    private var videoWriter: AVAssetWriter?
-
-    private var videoWriterInput: AVAssetWriterInput?
-
-    private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
-
     private var processedSize: CGSize?
 
-    private var outputFilePath: String?
-
-    private var firstClipTimeValue: CMTimeValue?
+    private var clipRecorder: ClipRecorder?
 
     // MARK: - View Controller Life Cycle
 
@@ -601,87 +593,24 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private func startRecordingClip() -> Bool {
         print ("start recording clip")
-
         guard let unwrappedProcessedSize = processedSize else {
             print("Processed size unknown")
             return false
         }
 
-        // Start recording video to a temporary file.
-        let outputFileName = NSUUID().uuidString
-        outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
-        do {
-            videoWriter = try AVAssetWriter(outputURL: URL(fileURLWithPath: outputFilePath!), fileType: AVFileType.mov)
-            let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
-                                                AVVideoWidthKey: Int(unwrappedProcessedSize.width),
-                                                AVVideoHeightKey: Int(unwrappedProcessedSize.height)]
-            videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
-            pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput!, sourcePixelBufferAttributes: nil)
-            if !videoWriter!.canAdd(videoWriterInput!) {
-                print("can't add video writer")
-                return false
-            }
-            videoWriterInput!.expectsMediaDataInRealTime = true
-            videoWriter!.add(videoWriterInput!)
-            videoWriter!.startWriting()
-            let startFrameTime = CMTimeMake(value: 0, timescale: 600)
-            videoWriter!.startSession(atSourceTime: startFrameTime)
-            print("started session at \(startFrameTime)")
-        } catch {
-            print("Error: \(error)")
-            return false
-        }
-        return true
+        clipRecorder = ClipRecorder(withSize: unwrappedProcessedSize)
+        return clipRecorder != nil
     }
 
     private func stopRecordingClip() {
         print("stop recording clip")
-        guard let unwrappedVideoWriter = videoWriter,
-              let unwrappedVideoWriterInput = videoWriterInput,
-              let unwrappedOutputFilePath = outputFilePath else {
+        guard let unwrappedClipRecorder = clipRecorder else {
             print("no recording")
             return
         }
 
-        unwrappedVideoWriterInput.markAsFinished()
-        unwrappedVideoWriter.finishWriting {
-            print(unwrappedVideoWriter.error ?? "finished writing ok I think!")
-        }
-
-        videoWriterInput = nil
-        videoWriter = nil
-        pixelBufferAdaptor = nil
-        firstClipTimeValue = nil
-
-        func cleanup() {
-            if FileManager.default.fileExists(atPath: unwrappedOutputFilePath) {
-                do {
-                    try FileManager.default.removeItem(atPath: unwrappedOutputFilePath)
-                } catch {
-                    print("Could not remove file at url: \(unwrappedOutputFilePath)")
-                }
-            }
-        }
-
-        PHPhotoLibrary.requestAuthorization { status in
-            if status == .authorized {
-                // Save the movie file to the photo library and cleanup.
-                PHPhotoLibrary.shared().performChanges({
-                    let options = PHAssetResourceCreationOptions()
-                    options.shouldMoveFile = true
-                    let creationRequest = PHAssetCreationRequest.forAsset()
-                    creationRequest.addResource(with: .video, fileURL: URL(fileURLWithPath: unwrappedOutputFilePath), options: options)
-                }, completionHandler: { success, error in
-                    if !success {
-                        print("AVCam couldn't save the movie to your photo library: \(String(describing: error))")
-                    }
-                    cleanup()
-                }
-                )
-            } else {
-                cleanup()
-            }
-        }
+        unwrappedClipRecorder.stopRecording()
+        clipRecorder = nil
     }
 
     @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
@@ -945,20 +874,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         processedSize = CGSize(width: CVPixelBufferGetWidth(finalVideoPixelBuffer), height: CVPixelBufferGetHeight(finalVideoPixelBuffer))
 
-        guard let unwrappedPixelBufferAdaptor = pixelBufferAdaptor else {
-            // no clip being recorded
-            return
-        }
-
-        if unwrappedPixelBufferAdaptor.assetWriterInput.isReadyForMoreMediaData {
-            let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            if firstClipTimeValue == nil {
-                firstClipTimeValue = timestamp.value
-            }
-            let videoTime = CMTime(value: timestamp.value - firstClipTimeValue!, timescale: timestamp.timescale)
-            unwrappedPixelBufferAdaptor.append(finalVideoPixelBuffer, withPresentationTime: videoTime)
-        } else {
-            print("adaptor not ready")
+        if let unwrappedClipRecorder = clipRecorder {
+            unwrappedClipRecorder.appendBuffer(finalVideoPixelBuffer, withTimestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         }
     }
 
