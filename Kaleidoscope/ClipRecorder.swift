@@ -20,7 +20,8 @@ class ClipRecorder {
 
     private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
 
-    private var firstClipTimeValue: CMTimeValue?
+    private var firstBufferTime: CMTime?
+    private var lastBufferTime: CMTime?
 
     private var stopped = false
 
@@ -30,10 +31,15 @@ class ClipRecorder {
         return internalBufferCount
     }
 
-    private var internalRecordDuration = CMTime(value: 0, timescale: 1)
-
     var recordDuration : CMTime {
-        return internalRecordDuration
+        if firstBufferTime == nil || lastBufferTime == nil {
+            return CMTime(value: 0, timescale: 1)
+        }
+        if firstBufferTime!.timescale != lastBufferTime!.timescale {
+            // Not sure easiest way to reconcile different timescales, punt for now
+            return CMTime(value: 0, timescale: 1)
+        }
+        return CMTime(value: lastBufferTime!.value - firstBufferTime!.value, timescale: firstBufferTime!.timescale)
     }
 
     required init?() {
@@ -50,8 +56,8 @@ class ClipRecorder {
     func appendBuffer(_ buffer: CVImageBuffer, withTimestamp timestamp: CMTime) {
         if (stopped) { return }
 
-        if firstClipTimeValue == nil {
-            firstClipTimeValue = timestamp.value
+        if firstBufferTime == nil {
+            firstBufferTime = timestamp
             let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
                                                 AVVideoWidthKey: Int(CVPixelBufferGetWidth(buffer)),
                                                 AVVideoHeightKey: Int(CVPixelBufferGetHeight(buffer))]
@@ -65,14 +71,12 @@ class ClipRecorder {
             videoWriterInput!.expectsMediaDataInRealTime = true
             videoWriter.add(videoWriterInput!)
             videoWriter.startWriting()
-            let startFrameTime = CMTimeMake(value: 0, timescale: 600)
-            videoWriter.startSession(atSourceTime: startFrameTime)
-            print("started session at \(startFrameTime)")
+            videoWriter.startSession(atSourceTime: timestamp)
         }
 
         if pixelBufferAdaptor!.assetWriterInput.isReadyForMoreMediaData {
-            internalRecordDuration = CMTime(value: timestamp.value - firstClipTimeValue!, timescale: timestamp.timescale)
-            pixelBufferAdaptor!.append(buffer, withPresentationTime: internalRecordDuration)
+            pixelBufferAdaptor!.append(buffer, withPresentationTime: timestamp)
+            lastBufferTime = timestamp
             internalBufferCount += 1
         } else {
             print("adaptor not ready")
@@ -125,7 +129,7 @@ class ClipRecorder {
         if internalBufferCount == 0 {
             return "Recording Clip - Starting"
         }
-        var status = String(format: "Recording Clip - %.2f", CMTimeGetSeconds(internalRecordDuration))
+        var status = String(format: "Recording Clip - %.2f", CMTimeGetSeconds(recordDuration))
         if stopped {
             status += " - Done"
         }
