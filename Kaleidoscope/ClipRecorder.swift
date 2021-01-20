@@ -127,7 +127,7 @@ class ClipRecorder {
             unwrappedClipWriterAudioInput.markAsFinished()
             print("clip finished")
         } else {
-            print("clip not written")
+            print("clip not written, clipWriter status: \(clipWriter.status.rawValue)")
         }
 
         clipWriter.finishWriting {
