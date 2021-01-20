@@ -501,6 +501,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
                 }
             }
         }
+        stopRecordingClip()
     }
 
     @objc
