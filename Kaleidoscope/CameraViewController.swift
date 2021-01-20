@@ -8,7 +8,7 @@ import CoreVideo
 import Photos
 import MobileCoreServices
 
-class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
+class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
 
     // MARK: - Properties
 
@@ -55,6 +55,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     private let dataOutputQueue = DispatchQueue(label: "VideoDataQueue", qos: .userInitiated, attributes: [], autoreleaseFrequency: .workItem)
 
     private let videoDataOutput = AVCaptureVideoDataOutput()
+    private let audioDataOutput = AVCaptureAudioDataOutput()
 
     private let photoOutput = AVCapturePhotoOutput()
 
@@ -401,6 +402,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             return
         }
 
+        let audioDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInMicrophone, for: AVMediaType.audio, position: AVCaptureDevice.Position.unspecified)!
+
         session.beginConfiguration()
 
         session.sessionPreset = AVCaptureSession.Preset.photo
@@ -413,6 +416,20 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             return
         }
         session.addInput(videoInput)
+
+        // Add an audio input device.
+        do {
+            let audioDevice = AVCaptureDevice.default(for: .audio)
+            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+
+            if session.canAddInput(audioDeviceInput) {
+                session.addInput(audioDeviceInput)
+            } else {
+                print("Could not add audio device input to the session")
+            }
+        } catch {
+            print("Could not create audio device input: \(error)")
+        }
 
         // Add a video data output
         if session.canAddOutput(videoDataOutput) {
@@ -437,6 +454,13 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
+        }
+
+        // Add audio output
+        if session.canAddOutput(audioDataOutput) {
+            audioDataOutput.setSampleBufferDelegate(self, queue: dataOutputQueue)
+            session.addOutput(audioDataOutput)
+            print("Added AVCaptureDataOutput: audio")
         }
 
         capFrameRate(videoDevice: videoDevice)
@@ -765,7 +789,47 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // MARK: - Video Data Output Delegate
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        processVideo(sampleBuffer: sampleBuffer)
+        if !renderingEnabled {
+            return
+        }
+
+        if connection.audioChannels.count > 0, let unwrappedClipRecorder = clipRecorder {
+            unwrappedClipRecorder.appendAudioBuffer(sampleBuffer)
+            return
+        }
+
+        guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer),
+              let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) else {
+            return
+        }
+
+        var finalVideoPixelBuffer = videoPixelBuffer
+        if !videoFilter.isPrepared {
+            /*
+             outputRetainedBufferCountHint is the number of pixel buffers the renderer retains. This value informs the renderer
+             how to size its buffer pool and how many pixel buffers to preallocate. Allow 3 frames of latency to cover the dispatch_async call.
+             */
+            videoFilter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+        }
+
+        setFilterParams(videoFilter)
+
+        // Send the pixel buffer through the filter
+        guard let filteredBuffer = videoFilter.render(pixelBuffer: finalVideoPixelBuffer) else {
+            print("Unable to filter video buffer")
+            return
+        }
+
+        finalVideoPixelBuffer = filteredBuffer
+
+        previewView.pixelBuffer = finalVideoPixelBuffer
+
+        if let unwrappedClipRecorder = clipRecorder {
+            unwrappedClipRecorder.appendImageBuffer(finalVideoPixelBuffer, withOriginalSampleBuffer: sampleBuffer)
+            DispatchQueue.main.async {
+                self.recordingClipLabel.text = unwrappedClipRecorder.statusString()
+            }
+        }
     }
 
     func updateImageRect(_ device: AVCaptureDevice) {
@@ -832,45 +896,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             return
         }
         renderer.mirrorCorners = unwrappedMirrorCorners
-    }
-
-    func processVideo(sampleBuffer: CMSampleBuffer) {
-        if !renderingEnabled {
-            return
-        }
-
-        guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer),
-            let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) else {
-                return
-        }
-
-        var finalVideoPixelBuffer = videoPixelBuffer
-        if !videoFilter.isPrepared {
-            /*
-             outputRetainedBufferCountHint is the number of pixel buffers the renderer retains. This value informs the renderer
-             how to size its buffer pool and how many pixel buffers to preallocate. Allow 3 frames of latency to cover the dispatch_async call.
-             */
-            videoFilter.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
-        }
-
-        setFilterParams(videoFilter)
-
-        // Send the pixel buffer through the filter
-        guard let filteredBuffer = videoFilter.render(pixelBuffer: finalVideoPixelBuffer) else {
-            print("Unable to filter video buffer")
-            return
-        }
-
-        finalVideoPixelBuffer = filteredBuffer
-
-        previewView.pixelBuffer = finalVideoPixelBuffer
-
-        if let unwrappedClipRecorder = clipRecorder {
-            unwrappedClipRecorder.appendBuffer(finalVideoPixelBuffer, withTimestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
-            DispatchQueue.main.async {
-                self.recordingClipLabel.text = unwrappedClipRecorder.statusString()
-            }
-        }
     }
 
     // MARK: - Photo Output Delegate

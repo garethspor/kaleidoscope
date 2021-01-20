@@ -14,9 +14,10 @@ class ClipRecorder {
 
     private let outputFilePath: String
 
-    private let videoWriter: AVAssetWriter
+    private let clipWriter: AVAssetWriter
 
-    private var videoWriterInput: AVAssetWriterInput?
+    private var clipWriterVideoInput: AVAssetWriterInput?
+    private var clipWriterAudioInput: AVAssetWriterInput?
 
     private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
 
@@ -46,32 +47,51 @@ class ClipRecorder {
         let outputFileName = NSUUID().uuidString
         self.outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
         do {
-            self.videoWriter = try AVAssetWriter(outputURL: URL(fileURLWithPath: outputFilePath), fileType: AVFileType.mov)
+            self.clipWriter = try AVAssetWriter(outputURL: URL(fileURLWithPath: outputFilePath), fileType: AVFileType.mov)
         } catch {
             print("Error: \(error)")
             return nil
         }
     }
 
-    func appendBuffer(_ buffer: CVImageBuffer, withTimestamp timestamp: CMTime) {
+    func appendImageBuffer(_ buffer: CVImageBuffer, withOriginalSampleBuffer originalSampleBuffer: CMSampleBuffer) {
         if (stopped) { return }
+
+        let timestamp = CMSampleBufferGetPresentationTimeStamp(originalSampleBuffer)
 
         if firstBufferTime == nil {
             firstBufferTime = timestamp
+
             let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
                                                 AVVideoWidthKey: Int(CVPixelBufferGetWidth(buffer)),
                                                 AVVideoHeightKey: Int(CVPixelBufferGetHeight(buffer))]
-            self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
-            self.videoWriterInput?.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
-            self.pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput!, sourcePixelBufferAttributes: nil)
-            if !videoWriter.canAdd(videoWriterInput!) {
+            self.clipWriterVideoInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
+            // Set transform so videos are recorded in portrait mode, same as UI
+            self.clipWriterVideoInput!.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
+            self.pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: clipWriterVideoInput!, sourcePixelBufferAttributes: nil)
+            if !clipWriter.canAdd(clipWriterVideoInput!) {
                 print("can't add video writer")
                 return
             }
-            videoWriterInput!.expectsMediaDataInRealTime = true
-            videoWriter.add(videoWriterInput!)
-            videoWriter.startWriting()
-            videoWriter.startSession(atSourceTime: timestamp)
+            clipWriterVideoInput!.expectsMediaDataInRealTime = true
+            clipWriter.add(clipWriterVideoInput!)
+
+            let audioSettings : [String : Any] = [
+                AVFormatIDKey : kAudioFormatMPEG4AAC,
+                AVSampleRateKey : 44100,
+                AVEncoderBitRateKey : 64000,
+                AVNumberOfChannelsKey: 1
+            ]
+            clipWriterAudioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioSettings)
+            clipWriterAudioInput!.expectsMediaDataInRealTime = true;
+            if clipWriter.canAdd(clipWriterAudioInput!) {
+                clipWriter.add(clipWriterAudioInput!)
+            } else{
+                print("Could not add videoWriterAudioInput to clipWriter")
+            }
+
+            clipWriter.startWriting()
+            clipWriter.startSession(atSourceTime: timestamp)
         }
 
         if pixelBufferAdaptor!.assetWriterInput.isReadyForMoreMediaData {
@@ -79,20 +99,39 @@ class ClipRecorder {
             lastBufferTime = timestamp
             internalBufferCount += 1
         } else {
-            print("adaptor not ready")
+            print("adaptor not ready for image data")
+        }
+
+    }
+
+    func appendAudioBuffer(_ originalSampleBuffer: CMSampleBuffer) {
+        if (stopped) { return }
+
+        if let unwrappedClipWriterAudioInput = clipWriterAudioInput, unwrappedClipWriterAudioInput.isReadyForMoreMediaData {
+            unwrappedClipWriterAudioInput.append(originalSampleBuffer)
+        } else {
+            print("adaptor doesn't exist or isn't ready for audio data")
         }
     }
-    
+
     func stopRecording() {
         stopped = true
 
-        guard let unwrappedVideoWriterInput = videoWriterInput else {
+        guard let unwrappedClipWriterVideoInput = clipWriterVideoInput,
+              let unwrappedClipWriterAudioInput = clipWriterAudioInput else {
             return
         }
 
-        unwrappedVideoWriterInput.markAsFinished()
-        videoWriter.finishWriting {
-            print(self.videoWriter.error ?? "finished writing ok I think!")
+        if clipWriter.status.rawValue == 1 {
+            unwrappedClipWriterVideoInput.markAsFinished()
+            unwrappedClipWriterAudioInput.markAsFinished()
+            print("clip finished")
+        } else {
+            print("clip not written")
+        }
+
+        clipWriter.finishWriting {
+            print(self.clipWriter.error ?? "finished writing ok")
         }
 
         func cleanup() {
