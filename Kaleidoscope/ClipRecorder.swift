@@ -168,11 +168,10 @@ class ClipRecorder {
         if internalBufferCount == 0 {
             return "Recording Clip - Starting"
         }
-        var status = String(format: "Recording Clip - %.2f", CMTimeGetSeconds(recordDuration))
         if stopped {
-            status += " - Done"
+            return String(format: "Recorded Clip - %.2f\" - Done", CMTimeGetSeconds(recordDuration))
         }
-        return status
+        return String(format: "Recording Clip - %.2f\"", CMTimeGetSeconds(recordDuration))
     }
 
 }

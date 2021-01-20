@@ -120,6 +120,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         cameraUnavailableLabel.isHidden = true
         resumeButton.isHidden = true
         recordingClipLabel.alpha = 0.0
+        recordingClipLabel.layer.cornerRadius = 10.0
+        recordingClipLabel.layer.masksToBounds = true
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cycleUiControlMode))
         previewView.addGestureRecognizer(tapGesture)
@@ -619,7 +621,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         unwrappedClipRecorder.stopRecording()
         recordingClipLabel.text = unwrappedClipRecorder.statusString()
-        UIView.animate(withDuration: 2.0) {
+        UIView.animate(withDuration: 2.0, delay: 2.0) {
             self.recordingClipLabel.alpha = 0.0
         }
         clipRecorder = nil
