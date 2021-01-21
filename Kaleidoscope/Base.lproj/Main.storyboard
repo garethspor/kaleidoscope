@@ -52,39 +52,12 @@
                                     <constraint firstAttribute="width" constant="64" id="TNQ-hH-XwN"/>
                                 </constraints>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jew-sj-bQL">
-                                <rect key="frame" x="161.5" y="426" width="91" height="44"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
-                                <state key="normal" title="Resume"/>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Camera Unavailable" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oEy-Sm-l2L">
-                                <rect key="frame" x="95" y="432.5" width="224.5" height="31.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
-                                <color key="textColor" systemColor="systemOrangeColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="I7a-Rc-PCC">
-                                <rect key="frame" x="319.5" y="800" width="43" height="34"/>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3LU-S7-GKM">
+                                <rect key="frame" x="0.0" y="100" width="414" height="660"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xmw-xl-vsm">
-                                        <rect key="frame" x="0.0" y="0.5" width="43" height="32"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="26"/>
-                                        <state key="normal" backgroundImage="arrow.triangle.2.circlepath.camera" catalog="system"/>
-                                        <connections>
-                                            <action selector="changeCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zPO-oE-IJg"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="43" id="euo-ow-d0J"/>
-                                    <constraint firstAttribute="height" constant="34" id="zdR-bf-TH9"/>
-                                </constraints>
-                            </stackView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4h6-gG-9qV">
-                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
-                                <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="48" translatesAutoresizingMaskIntoConstraints="NO" id="I4r-dX-dWm">
-                                        <rect key="frame" x="18" y="589" width="378" height="68"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="48" translatesAutoresizingMaskIntoConstraints="NO" id="I4r-dX-dWm">
+                                        <rect key="frame" x="18" y="296" width="378" height="68"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Y91-VK-jpr" userLabel="Labels Stack View">
                                                 <rect key="frame" x="0.0" y="0.0" width="130" height="68"/>
@@ -134,33 +107,45 @@
                                         </subviews>
                                     </stackView>
                                 </subviews>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jew-sj-bQL">
+                                <rect key="frame" x="161.5" y="426" width="91" height="44"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <state key="normal" title="Resume"/>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Camera Unavailable" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oEy-Sm-l2L">
+                                <rect key="frame" x="95" y="432.5" width="224.5" height="31.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <color key="textColor" systemColor="systemOrangeColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="I7a-Rc-PCC">
+                                <rect key="frame" x="319.5" y="800" width="43" height="34"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xmw-xl-vsm">
+                                        <rect key="frame" x="0.0" y="0.5" width="43" height="32"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                        <state key="normal" backgroundImage="arrow.triangle.2.circlepath.camera" catalog="system"/>
+                                        <connections>
+                                            <action selector="changeCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zPO-oE-IJg"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <constraints>
-                                    <constraint firstItem="I4r-dX-dWm" firstAttribute="centerX" secondItem="4h6-gG-9qV" secondAttribute="centerX" id="1Os-th-rId"/>
-                                    <constraint firstItem="I4r-dX-dWm" firstAttribute="leading" secondItem="4h6-gG-9qV" secondAttribute="leading" constant="18" id="Cmd-s3-CJr"/>
-                                    <constraint firstAttribute="trailing" secondItem="I4r-dX-dWm" secondAttribute="trailing" constant="18" id="EVc-6Y-5IN"/>
-                                    <constraint firstAttribute="bottom" secondItem="I4r-dX-dWm" secondAttribute="bottom" constant="195" id="zxX-kB-RcL"/>
+                                    <constraint firstAttribute="width" constant="43" id="euo-ow-d0J"/>
+                                    <constraint firstAttribute="height" constant="34" id="zdR-bf-TH9"/>
                                 </constraints>
-                            </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3LU-S7-GKM">
-                                <rect key="frame" x="0.0" y="-19" width="240" height="128"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </view>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="4h6-gG-9qV" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="0gY-Fc-7FA"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wJ0-Or-nuf" secondAttribute="bottom" constant="7" id="2WN-lE-8x7"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="I7a-Rc-PCC" secondAttribute="trailing" constant="51.5" id="KkJ-hj-NFI"/>
-                            <constraint firstAttribute="trailing" secondItem="4h6-gG-9qV" secondAttribute="trailing" id="Nfd-tT-4mU"/>
                             <constraint firstItem="oEy-Sm-l2L" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ON3-Lh-WiH"/>
-                            <constraint firstAttribute="bottom" secondItem="4h6-gG-9qV" secondAttribute="bottom" id="W9P-mN-cjS"/>
-                            <constraint firstItem="4h6-gG-9qV" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="WVa-av-sqi"/>
                             <constraint firstItem="oEy-Sm-l2L" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="WqJ-ze-YbH"/>
-                            <constraint firstAttribute="bottom" secondItem="4h6-gG-9qV" secondAttribute="bottom" id="btG-d8-UFv"/>
                             <constraint firstItem="ZOk-hL-s1e" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hoS-ul-WuN"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="I7a-Rc-PCC" secondAttribute="bottom" constant="28" id="iIO-00-VsN"/>
-                            <constraint firstItem="4h6-gG-9qV" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="ku4-U2-tbV"/>
                             <constraint firstItem="wJ0-Or-nuf" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="s7q-Fx-BVc"/>
                             <constraint firstItem="Jew-sj-bQL" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="vah-NG-yM9"/>
                             <constraint firstItem="ZOk-hL-s1e" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="vxs-Ps-qX6"/>
@@ -176,7 +161,7 @@
                         <outlet property="photoButton" destination="MsC-Qh-QrI" id="jGG-0D-GGm"/>
                         <outlet property="previewView" destination="8bC-Xf-vdC" id="D3J-l9-a0K"/>
                         <outlet property="recordingClipLabel" destination="RIw-Gz-K3u" id="4Ln-BU-IRi"/>
-                        <outlet property="renderingControlView" destination="4h6-gG-9qV" id="l4C-k9-bDc"/>
+                        <outlet property="renderingControlView" destination="I4r-dX-dWm" id="4V2-Fx-HKd"/>
                         <outlet property="resumeButton" destination="Jew-sj-bQL" id="0lo-XG-2UO"/>
                         <outlet property="transparencySlider" destination="Hxh-24-KwQ" id="xti-bF-qyb"/>
                     </connections>

@@ -24,7 +24,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var imageRectView: UIView!
 
-    @IBOutlet weak private var renderingControlView : UIView!
+    @IBOutlet weak private var renderingControlView : UIStackView!
 
     @IBOutlet weak private var brightnessSlider : UISlider!
 
