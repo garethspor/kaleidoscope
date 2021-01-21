@@ -617,13 +617,18 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBAction private func longPressPhotoButton(_ gesture: UILongPressGestureRecognizer) {
         if gesture.state == .began {
-            startRecordingClip()
+            if clipRecorder == nil {
+                startRecordingClip()
+            } else {
+                stopRecordingClip()
+            }
         }
     }
 
     private func startRecordingClip() {
         recordingClipLabel.text = "Starting Recording Clip"
         recordingClipLabel.alpha = 1.0
+        recordingClipLabel.backgroundColor = .systemRed
         photoButton.tintColor = .systemRed
         clipRecorder = ClipRecorder()
     }
@@ -635,6 +640,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
 
         unwrappedClipRecorder.stopRecording()
+        recordingClipLabel.backgroundColor = .systemGreen
         recordingClipLabel.text = unwrappedClipRecorder.statusString()
         UIView.animate(withDuration: 2.0, delay: 2.0) {
             self.recordingClipLabel.alpha = 0.0
