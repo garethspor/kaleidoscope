@@ -14,6 +14,7 @@
 		AF2A7E4A25A18BD200FAFE02 /* Kaleidoscope.metal in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E4925A18BD200FAFE02 /* Kaleidoscope.metal */; };
 		AF2A7E5D25A2ABE800FAFE02 /* KaleidoscopeFilterParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2A7E5C25A2ABE800FAFE02 /* KaleidoscopeFilterParams.swift */; };
 		AF777F7A25B748B200802612 /* ClipRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF777F7925B748B200802612 /* ClipRecorder.swift */; };
+		AF777F8B25B9353E00802612 /* DotSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF777F8A25B9353E00802612 /* DotSpinner.swift */; };
 		AFC44DFC259E456200226A8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFB259E456200226A8F /* AppDelegate.swift */; };
 		AFC44DFE259E456200226A8F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFD259E456200226A8F /* SceneDelegate.swift */; };
 		AFC44E00259E456200226A8F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC44DFF259E456200226A8F /* ViewController.swift */; };
@@ -52,7 +53,8 @@
 		AF2A7E4425A18BC500FAFE02 /* KaleidoscopeRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaleidoscopeRenderer.swift; sourceTree = "<group>"; };
 		AF2A7E4925A18BD200FAFE02 /* Kaleidoscope.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Kaleidoscope.metal; sourceTree = "<group>"; };
 		AF2A7E5C25A2ABE800FAFE02 /* KaleidoscopeFilterParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaleidoscopeFilterParams.swift; sourceTree = "<group>"; };
-		AF777F7925B748B200802612 /* ClipRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ClipRecorder.swift; path = Kaleidoscope/ClipRecorder.swift; sourceTree = "<group>"; };
+		AF777F7925B748B200802612 /* ClipRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipRecorder.swift; sourceTree = "<group>"; };
+		AF777F8A25B9353E00802612 /* DotSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotSpinner.swift; sourceTree = "<group>"; };
 		AFC44DF8259E456200226A8F /* KaleidoSpor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KaleidoSpor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC44DFB259E456200226A8F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFC44DFD259E456200226A8F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,7 +111,6 @@
 		AFC44DEF259E456200226A8F = {
 			isa = PBXGroup;
 			children = (
-				AF777F7925B748B200802612 /* ClipRecorder.swift */,
 				AF2A7E3425A183A300FAFE02 /* README.md */,
 				AFC44DFA259E456200226A8F /* Kaleidoscope */,
 				AFC44E11259E456500226A8F /* KaleidoscopeTests */,
@@ -131,6 +132,8 @@
 		AFC44DFA259E456200226A8F /* Kaleidoscope */ = {
 			isa = PBXGroup;
 			children = (
+				AF777F7925B748B200802612 /* ClipRecorder.swift */,
+				AF777F8A25B9353E00802612 /* DotSpinner.swift */,
 				AF2A7E4425A18BC500FAFE02 /* KaleidoscopeRenderer.swift */,
 				AF2A7E5C25A2ABE800FAFE02 /* KaleidoscopeFilterParams.swift */,
 				AF2A7E1B259EAA5600FAFE02 /* Shaders */,
@@ -304,6 +307,7 @@
 				AFC44E37259E5FFD00226A8F /* PreviewMetalView.swift in Sources */,
 				AF777F7A25B748B200802612 /* ClipRecorder.swift in Sources */,
 				AF2A7E4525A18BC500FAFE02 /* KaleidoscopeRenderer.swift in Sources */,
+				AF777F8B25B9353E00802612 /* DotSpinner.swift in Sources */,
 				AF2A7E17259EAA5000FAFE02 /* PassThroughMetal.metal in Sources */,
 				AF2A7E4A25A18BD200FAFE02 /* Kaleidoscope.metal in Sources */,
 				AFC44E3C259E612E00226A8F /* FilterRenderer.swift in Sources */,

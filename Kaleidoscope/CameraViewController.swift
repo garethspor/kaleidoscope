@@ -103,11 +103,15 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     private var panGesture: UIPanGestureRecognizer?
 
+    private var longPressGestureToStartSpinning: UILongPressGestureRecognizer?
+
     private var longPressPhotoGesture: UILongPressGestureRecognizer?
 
     private var clipRecorder: ClipRecorder?
 
     @IBOutlet weak var recordingClipLabel: UILabel!
+
+    private var dotSpinner: DotSpinner?
 
     // MARK: - View Controller Life Cycle
 
@@ -128,6 +132,9 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
         previewView.addGestureRecognizer(panGesture!)
+
+        longPressGestureToStartSpinning = UILongPressGestureRecognizer(target: self, action: #selector(startDotsSpinning))
+        previewView.addGestureRecognizer(longPressGestureToStartSpinning!)
 
         longPressPhotoGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressPhotoButton))
         photoButton.addGestureRecognizer(longPressPhotoGesture!)
@@ -586,6 +593,13 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     // MARK: - IBAction Functions
 
     @IBAction private func cycleUiControlMode(_ gesture: UITapGestureRecognizer) {
+        if let unwrappedDotSpinner = dotSpinner {
+            unwrappedDotSpinner.resetRotation()
+            updateSpinningDots()
+            dotSpinner = nil
+            return
+        }
+
         switch uiControlMode {
         case .draggableDots:
             uiControlMode = .renderingSliders
@@ -626,6 +640,34 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             self.recordingClipLabel.alpha = 0.0
         }
         clipRecorder = nil
+    }
+
+    @IBAction private func startDotsSpinning(_ gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            if dotSpinner == nil {
+                dotSpinner = DotSpinner(withFrames: [dotViews[0].frame, dotViews[1].frame, dotViews[2].frame])
+            }
+            dotSpinner!.accelerating = true
+        } else if gesture.state == .cancelled || gesture.state == .ended {
+            if let unwrappedDotSpinner = dotSpinner {
+                unwrappedDotSpinner.accelerating = false
+            }
+        }
+    }
+
+    private func updateSpinningDots() {
+        guard let unwrappedDotSpinner = dotSpinner else {
+            print("no dotSpinner")
+            return
+        }
+        let spunFrames = unwrappedDotSpinner.spunFrames
+
+        DispatchQueue.main.async {
+            for index in 0..<self.dotViews.count {
+                self.dotViews[index].frame = spunFrames[index]
+            }
+            self.updateMirrorCorners()
+        }
     }
 
     @IBAction private func dragDots(_ gesture: UIPanGestureRecognizer) {
@@ -826,6 +868,11 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         finalVideoPixelBuffer = filteredBuffer
 
         previewView.pixelBuffer = finalVideoPixelBuffer
+
+        if let unwrappedDotSpinner = dotSpinner {
+            unwrappedDotSpinner.updateRotation()
+            updateSpinningDots()
+        }
 
         if let unwrappedClipRecorder = clipRecorder {
             unwrappedClipRecorder.appendImageBuffer(finalVideoPixelBuffer, withOriginalSampleBuffer: sampleBuffer)
