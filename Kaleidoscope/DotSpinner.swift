@@ -18,7 +18,7 @@ class DotSpinner {
 
     private var rotation: Double = 0.0
     private var rotationSpeed: Double = 0.0
-    var rotationAcceleration = Double.pi / 30 / 120
+    var rotationAcceleration = -Double.pi / 3600
     var accelerating = false
 
     var spunFrames : [CGRect] {
