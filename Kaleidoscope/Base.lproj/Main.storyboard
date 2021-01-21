@@ -141,6 +141,10 @@
                                     <constraint firstAttribute="bottom" secondItem="I4r-dX-dWm" secondAttribute="bottom" constant="195" id="zxX-kB-RcL"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3LU-S7-GKM">
+                                <rect key="frame" x="0.0" y="-19" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -168,6 +172,7 @@
                         <outlet property="cameraButton" destination="Xmw-xl-vsm" id="fCI-VE-L7W"/>
                         <outlet property="cameraUnavailableLabel" destination="oEy-Sm-l2L" id="mfO-nt-poL"/>
                         <outlet property="dotView" destination="hJF-Pc-tBM" id="PCA-y7-213"/>
+                        <outlet property="imageRectView" destination="3LU-S7-GKM" id="Scl-Xy-YQy"/>
                         <outlet property="photoButton" destination="MsC-Qh-QrI" id="jGG-0D-GGm"/>
                         <outlet property="previewView" destination="8bC-Xf-vdC" id="D3J-l9-a0K"/>
                         <outlet property="recordingClipLabel" destination="RIw-Gz-K3u" id="4Ln-BU-IRi"/>

@@ -22,6 +22,8 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
 
     @IBOutlet weak private var previewView: PreviewMetalView!
 
+    @IBOutlet weak private var imageRectView: UIView!
+
     @IBOutlet weak private var renderingControlView : UIView!
 
     @IBOutlet weak private var brightnessSlider : UISlider!
@@ -128,13 +130,13 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         recordingClipLabel.layer.masksToBounds = true
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cycleUiControlMode))
-        previewView.addGestureRecognizer(tapGesture)
+        imageRectView.addGestureRecognizer(tapGesture)
 
         panGesture = UIPanGestureRecognizer(target: self, action: #selector(dragDots))
-        previewView.addGestureRecognizer(panGesture!)
+        imageRectView.addGestureRecognizer(panGesture!)
 
         longPressGestureToStartSpinning = UILongPressGestureRecognizer(target: self, action: #selector(startDotsSpinning))
-        previewView.addGestureRecognizer(longPressGestureToStartSpinning!)
+        imageRectView.addGestureRecognizer(longPressGestureToStartSpinning!)
 
         longPressPhotoGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressPhotoButton))
         photoButton.addGestureRecognizer(longPressPhotoGesture!)
@@ -915,6 +917,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
 
         DispatchQueue.main.async {
+            self.imageRectView.frame = self.currentVideoRect!
             self.updateMirrorCorners()
         }
     }
