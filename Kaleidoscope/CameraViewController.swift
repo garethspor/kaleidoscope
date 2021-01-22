@@ -416,8 +416,6 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             return
         }
 
-        let audioDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInMicrophone, for: AVMediaType.audio, position: AVCaptureDevice.Position.unspecified)!
-
         session.beginConfiguration()
 
         session.sessionPreset = AVCaptureSession.Preset.photo
