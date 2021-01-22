@@ -34,7 +34,7 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         numSegments: 3,
         mirrored: false,
         brightness: 0.8,
-        transparency: 0.2,
+        transparency: 0.5,
         maxReflections: 64)
 
     private enum SessionSetupResult {
