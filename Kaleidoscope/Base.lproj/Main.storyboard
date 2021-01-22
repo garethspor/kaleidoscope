@@ -102,11 +102,6 @@
                                                 </subviews>
                                             </stackView>
                                         </subviews>
-                                        <constraints>
-                                            <constraint firstItem="I4r-dX-dWm" firstAttribute="top" secondItem="WRb-uu-Kfu" secondAttribute="top" constant="18" id="7lU-yd-7wp"/>
-                                            <constraint firstItem="I4r-dX-dWm" firstAttribute="leading" secondItem="WRb-uu-Kfu" secondAttribute="leading" constant="18" id="Ecw-Uo-hFe"/>
-                                            <constraint firstAttribute="trailing" secondItem="I4r-dX-dWm" secondAttribute="trailing" constant="18" id="r80-ot-dzU"/>
-                                        </constraints>
                                     </stackView>
                                 </subviews>
                                 <constraints>
