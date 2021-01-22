@@ -179,13 +179,14 @@ class CameraViewController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         }
 
         let image = UIImage(named: "dot.png")
-        let centerX = Int(previewView.frame.size.width / 2)
-        let initialDotCoords = [
-            [centerX + 59, 302],
-            [centerX, 200],
-            [centerX, 443]]
-
         let dotSize = 24
+        let centerX = Int(previewView.frame.size.width / 2) - dotSize / 2
+        let centerY = Int(previewView.frame.size.height / 2) - dotSize / 2
+        let initialDotCoords = [
+            [centerX + 59, centerY - 141],
+            [centerX, centerY - 243],
+            [centerX, centerY]]
+
         for coords in initialDotCoords {
             let imageView = UIImageView(image: image!)
             imageView.frame = CGRect(x: coords[0], y: coords[1], width: dotSize, height: dotSize)
