@@ -32,9 +32,8 @@
                                     <constraint firstAttribute="width" constant="333" id="Is5-h0-Ru1"/>
                                 </constraints>
                             </stackView>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hJF-Pc-tBM">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hJF-Pc-tBM">
                                 <rect key="frame" x="0.0" y="0.0" width="500" height="1000"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wJ0-Or-nuf" userLabel="Photo Button Stack View">
                                 <rect key="frame" x="175" y="791" width="64" height="64"/>
@@ -53,12 +52,11 @@
                                     <constraint firstAttribute="width" constant="64" id="TNQ-hH-XwN"/>
                                 </constraints>
                             </stackView>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3LU-S7-GKM">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3LU-S7-GKM">
                                 <rect key="frame" x="0.0" y="100" width="414" height="660"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="WRb-uu-Kfu">
-                                        <rect key="frame" x="18" y="296" width="200" height="144"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="WRb-uu-Kfu">
+                                        <rect key="frame" x="18" y="100" width="200" height="144"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="I4r-dX-dWm">
                                                 <rect key="frame" x="0.0" y="0.0" width="200" height="144"/>
@@ -111,6 +109,10 @@
                                         </constraints>
                                     </stackView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="WRb-uu-Kfu" firstAttribute="top" secondItem="3LU-S7-GKM" secondAttribute="top" constant="100" id="O8r-CY-Lne"/>
+                                    <constraint firstItem="WRb-uu-Kfu" firstAttribute="leading" secondItem="3LU-S7-GKM" secondAttribute="leading" constant="18" id="vKY-UE-dJe"/>
+                                </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jew-sj-bQL">
                                 <rect key="frame" x="161.5" y="426" width="91" height="44"/>
@@ -145,11 +147,19 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="wJ0-Or-nuf" secondAttribute="bottom" constant="7" id="2WN-lE-8x7"/>
+                            <constraint firstItem="wJ0-Or-nuf" firstAttribute="top" secondItem="3LU-S7-GKM" secondAttribute="bottom" constant="31" id="8Tz-B1-X23"/>
+                            <constraint firstItem="3LU-S7-GKM" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="9Ci-hv-1RN"/>
+                            <constraint firstItem="3LU-S7-GKM" firstAttribute="centerX" secondItem="oEy-Sm-l2L" secondAttribute="centerX" id="HoN-mq-Gmv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="I7a-Rc-PCC" secondAttribute="trailing" constant="51.5" id="KkJ-hj-NFI"/>
                             <constraint firstItem="oEy-Sm-l2L" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ON3-Lh-WiH"/>
                             <constraint firstItem="oEy-Sm-l2L" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="WqJ-ze-YbH"/>
+                            <constraint firstItem="3LU-S7-GKM" firstAttribute="leading" secondItem="hJF-Pc-tBM" secondAttribute="leading" id="YEe-Jg-GOl"/>
+                            <constraint firstAttribute="bottom" secondItem="hJF-Pc-tBM" secondAttribute="bottom" constant="-104" id="cie-Ii-zfL"/>
+                            <constraint firstItem="hJF-Pc-tBM" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="d6h-Eh-jKV"/>
                             <constraint firstItem="ZOk-hL-s1e" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hoS-ul-WuN"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="I7a-Rc-PCC" secondAttribute="bottom" constant="28" id="iIO-00-VsN"/>
+                            <constraint firstItem="3LU-S7-GKM" firstAttribute="top" secondItem="ZOk-hL-s1e" secondAttribute="bottom" constant="30.5" id="iYP-k1-0pm"/>
+                            <constraint firstAttribute="trailing" secondItem="hJF-Pc-tBM" secondAttribute="trailing" constant="-86" id="pjX-HD-qyL"/>
                             <constraint firstItem="wJ0-Or-nuf" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="s7q-Fx-BVc"/>
                             <constraint firstItem="Jew-sj-bQL" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="vah-NG-yM9"/>
                             <constraint firstItem="ZOk-hL-s1e" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="vxs-Ps-qX6"/>
